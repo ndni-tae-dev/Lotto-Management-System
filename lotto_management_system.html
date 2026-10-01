@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="th" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LottoManager Enterprise - ระบบจัดการข้อมูลเลขเด็ดระดับมืออาชีพ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter & Prompt) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Navbar / Header -->
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                    <i class="fa-solid fa-ticket text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent" data-i18n="app_title">LottoManager Enterprise</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="app_subtitle">ระบบจัดการและรวบรวมเลขเด็ดออนไลน์</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Mode Switcher (User / Admin) -->
+                <div class="bg-slate-200/70 dark:bg-slate-800/70 p-1 rounded-xl flex items-center shadow-inner">
+                    <button id="btn-mode-user" onclick="switchMode('user')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm">
+                        <i class="fa-solid fa-user-pen"></i>
+                        <span data-i18n="mode_user">โหมดเพื่อน (User)</span>
+                    </button>
+                    <button id="btn-mode-admin" onclick="switchMode('admin')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span data-i18n="mode_admin">ผู้ดูแลระบบ (Admin)</span>
+                    </button>
+                </div>
+
+                <!-- Language Switcher -->
+                <button onclick="toggleLanguage()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 text-xs font-semibold" title="Switch Language">
+                    <i class="fa-solid fa-globe mr-1"></i> <span id="lang-label">EN</span>
+                </button>
+
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300" title="Toggle Theme">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Real-time Sync Indicator Banner -->
+        <div class="mb-6 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 border border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-center space-x-3">
+                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-white" data-i18n="banner_title">ระบบซิงค์ข้อมูลเรียลไทม์ (Live Sync Enabled)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="banner_desc">เพื่อนกรอกข้อมูลในแท็บนี้ Admin จะเห็นข้อมูลอัปเดตทันทีผ่าน LocalStorage Broadcast</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="openDeployModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs font-medium rounded-xl transition-all shadow-sm flex items-center space-x-1.5">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span data-i18n="btn_deploy_guide">วิธีนำขึ้นเว็บ Vercel</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- USER VIEW SECTION -->
+        <div id="view-user" class="space-y-6 animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- User Form Section -->
+                <div class="lg:col-span-1">
+                    <div class="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 flex items-center space-x-2">
+                            <i class="fa-solid fa-pen-to-square text-emerald-500"></i>
+                            <span data-i18n="form_heading">ส่งรายการเลขเด็ด</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-5" data-i18n="form_subheading">กรอกข้อมูลรายละเอียดเลขที่ต้องการส่งให้ผู้ดูแล</p>
+
+                        <form id="lotto-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_sender">ชื่อผู้ส่ง / กลุ่มเพื่อน *</label>
+                                <input type="text" id="senderName" required placeholder="เช่น คุณสมชาย หรือ แก๊งสามช่า" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_number">เลขเด็ด *</label>
+                                    <input type="text" id="lottoNumber" required placeholder="เช่น 24 หรือ 589" maxlength="3" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-mono tracking-widest text-center font-bold text-emerald-600 dark:text-emerald-400 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_amount">จำนวนเงิน (บาท) *</label>
+                                    <input type="number" id="lottoAmount" required min="1" placeholder="100" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold transition-all">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_type">ประเภทเลขเด็ด *</label>
+                                <select id="lottoType" onchange="onTypeChange()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+                                    <option value="2ตัวบน">2 ตัวบน</option>
+                                    <option value="2ตัวล่าง">2 ตัวล่าง</option>
+                                    <option value="3ตัวบน">3 ตัวบน</option>
+                                    <option value="3ตัวโต๊ด">3 ตัวโต๊ด</option>
+                                    <option value="3ตัวล่าง">3 ตัวล่าง</option>
+                                </select>
+                            </div>
+
+                            <div id="position-option-container" class="hidden p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-800/50">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1.5" data-i18n="label_position">เลือกรูปแบบเพิ่มเติม</label>
+                                <div class="flex space-x-4">
+                                    <label class="flex items-center space-x-2 text-xs cursor-pointer">
+                                        <input type="checkbox" id="posTop" checked class="rounded text-emerald-600 focus:ring-emerald-500">
+                                        <span data-i18n="pos_top">บน</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 text-xs cursor-pointer">
+                                        <input type="checkbox" id="posBottom" class="rounded text-emerald-600 focus:ring-emerald-500">
+                                        <span data-i18n="pos_bottom">ล่าง (กลับ)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_note">หมายเหตุ / โน้ตเพิ่มเติม</label>
+                                <input type="text" id="lottoNote" placeholder="เช่น เน้นหนักเป็นพิเศษ" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+                            </div>
+
+                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium rounded-xl shadow-lg shadow-emerald-500/25 transition-all text-sm flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span data-i18n="btn_submit">บันทึกและส่งข้อมูล</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- User History Section -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="glass-card rounded-2xl p-6 shadow-xl">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-clock-rotate-left text-teal-500"></i>
+                                    <span data-i18n="my_submissions_title">รายการที่คุณเคยส่งในเครื่องนี้</span>
+                                </h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="my_submissions_sub">ข้อมูลจะบันทึกอัตโนมัติบน LocalStorage</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="user-total-count" class="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs font-semibold">0 รายการ</span>
+                            </div>
+                        </div>
+
+                        <div id="user-history-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN VIEW SECTION -->
+        <div id="view-admin" class="hidden space-y-6 animate-fade-in">
+            <!-- Dashboard Metrics Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="stat_total_bills">ยอดบิลทั้งหมด</p>
+                            <h4 id="stat-bills" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="stat_total_items">จำนวนรายการเลข</p>
+                            <h4 id="stat-items" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-list-ol"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="stat_total_amount">ยอดเงินรวมทั้งหมด</p>
+                            <h4 id="stat-amount" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">฿0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider" data-i18n="stat_senders">จำนวนเพื่อนผู้ส่ง</p>
+                            <h4 id="stat-senders" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tools & Actions Bar -->
+            <div class="glass-card rounded-2xl p-5 shadow-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-3 flex-grow">
+                    <!-- Search Input -->
+                    <div class="relative flex-grow sm:max-w-xs">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-search"></i>
+                        </span>
+                        <input type="text" id="admin-search" oninput="renderAdminTable()" placeholder="ค้นหาเลข, ชื่อผู้ส่ง..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                    </div>
+
+                    <!-- Type Filter -->
+                    <select id="admin-filter-type" onchange="renderAdminTable()" class="px-3 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                        <option value="all" data-i18n="filter_all_types">ทุกประเภท</option>
+                        <option value="2ตัวบน">2 ตัวบน</option>
+                        <option value="2ตัวล่าง">2 ตัวล่าง</option>
+                        <option value="3ตัวบน">3 ตัวบน</option>
+                        <option value="3ตัวโต๊ด">3 ตัวโต๊ด</option>
+                        <option value="3ตัวล่าง">3 ตัวล่าง</option>
+                    </select>
+
+                    <!-- Sender Filter -->
+                    <select id="admin-filter-sender" onchange="renderAdminTable()" class="px-3 py-2 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                        <option value="all" data-i18n="filter_all_senders">ทุกคนทุกกลุ่ม</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="openAddModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-medium transition-all shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-plus"></i>
+                        <span data-i18n="btn_add">เพิ่มรายการ</span>
+                    </button>
+                    <button onclick="openLuckyDrawModal()" class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-medium transition-all shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span data-i18n="btn_checker">ตรวจรางวัล</span>
+                    </button>
+                    <button onclick="openHotNumbersModal()" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-xs font-medium transition-all shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-fire"></i>
+                        <span data-i18n="btn_hot_numbers">เลขดังยอดฮิต</span>
+                    </button>
+                    <div class="relative group">
+                        <button class="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-medium transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-download"></i>
+                            <span data-i18n="btn_export">Export</span>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-44 glass-card rounded-xl shadow-2xl py-2 hidden group-hover:block z-20 border border-slate-200 dark:border-slate-700">
+                            <button onclick="exportCSV()" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-file-csv text-emerald-500"></i>
+                                <span>Export CSV</span>
+                            </button>
+                            <button onclick="exportExcel()" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                                <span>Export Excel (XLS)</span>
+                            </button>
+                            <button onclick="window.print()" class="w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-print text-blue-500"></i>
+                                <span>Print Report</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Table Data -->
+            <div class="glass-card rounded-2xl shadow-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100/70 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 text-xs font-semibold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+                                <th class="p-4" data-i18n="th_no">#</th>
+                                <th class="p-4" data-i18n="th_sender">ผู้ส่ง / กลุ่ม</th>
+                                <th class="p-4" data-i18n="th_number">เลขเด็ด</th>
+                                <th class="p-4" data-i18n="th_type">ประเภท</th>
+                                <th class="p-4 text-right" data-i18n="th_amount">จำนวนเงิน</th>
+                                <th class="p-4" data-i18n="th_note">หมายเหตุ</th>
+                                <th class="p-4" data-i18n="th_time">เวลาที่ส่ง</th>
+                                <th class="p-4 text-center" data-i18n="th_actions">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-200 dark:divide-slate-800 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Empty State -->
+                <div id="admin-empty-state" class="hidden py-16 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 text-2xl">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm" data-i18n="empty_records">ยังไม่มีรายการข้อมูลในระบบ</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- EDIT MODAL -->
+    <div id="edit-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 shadow-2xl animate-fade-in">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square text-emerald-500"></i>
+                    <span data-i18n="modal_edit_title">แก้ไขรายการเลขเด็ด</span>
+                </h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="edit-form" onsubmit="handleEditSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_sender">ชื่อผู้ส่ง / กลุ่มเพื่อน *</label>
+                    <input type="text" id="edit-senderName" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_number">เลขเด็ด *</label>
+                        <input type="text" id="edit-lottoNumber" required maxlength="3" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-mono text-center font-bold text-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_amount">จำนวนเงิน (บาท) *</label>
+                        <input type="number" id="edit-lottoAmount" required min="1" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_type">ประเภทเลขเด็ด *</label>
+                    <select id="edit-lottoType" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                        <option value="2ตัวบน">2 ตัวบน</option>
+                        <option value="2ตัวล่าง">2 ตัวล่าง</option>
+                        <option value="3ตัวบน">3 ตัวบน</option>
+                        <option value="3ตัวโต๊ด">3 ตัวโต๊ด</option>
+                        <option value="3ตัวล่าง">3 ตัวล่าง</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_note">หมายเหตุ</label>
+                    <input type="text" id="edit-lottoNote" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium" data-i18n="btn_cancel">ยกเลิก</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium" data-i18n="btn_save">บันทึกการแก้ไข</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD MODAL (Admin) -->
+    <div id="add-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 shadow-2xl animate-fade-in">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-plus text-emerald-500"></i>
+                    <span data-i18n="modal_add_title">เพิ่มรายการใหม่ (โดย Admin)</span>
+                </h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="admin-add-form" onsubmit="handleAdminAddSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_sender">ชื่อผู้ส่ง / กลุ่มเพื่อน *</label>
+                    <input type="text" id="admin-senderName" required placeholder="เช่น คุณสมชาย" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_number">เลขเด็ด *</label>
+                        <input type="text" id="admin-lottoNumber" required maxlength="3" placeholder="24" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-mono text-center font-bold text-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_amount">จำนวนเงิน (บาท) *</label>
+                        <input type="number" id="admin-lottoAmount" required min="1" placeholder="100" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_type">ประเภทเลขเด็ด *</label>
+                    <select id="admin-lottoType" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                        <option value="2ตัวบน">2 ตัวบน</option>
+                        <option value="2ตัวล่าง">2 ตัวล่าง</option>
+                        <option value="3ตัวบน">3 ตัวบน</option>
+                        <option value="3ตัวโต๊ด">3 ตัวโต๊ด</option>
+                        <option value="3ตัวล่าง">3 ตัวล่าง</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="label_note">หมายเหตุ</label>
+                    <input type="text" id="admin-lottoNote" placeholder="บันทึกเพิ่มเติม" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium" data-i18n="btn_cancel">ยกเลิก</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium" data-i18n="btn_add">เพิ่มรายการ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LUCKY DRAW / CHECKER MODAL -->
+    <div id="luckydraw-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-2xl w-full p-6 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-trophy text-amber-500"></i>
+                    <span data-i18n="modal_checker_title">ระบบตรวจรางวัลจำลอง (Lucky Draw Checker)</span>
+                </h3>
+                <button onclick="closeLuckyDrawModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4" data-i18n="modal_checker_desc">กรอกผลรางวัลที่ออกเพื่อตรวจสอบว่ามีเพื่อนคนไหนถูกรางวัลและคำนยอดเงินรางวัลจำลอง</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="prize_3top">รางวัล 3 ตัวบน</label>
+                    <input type="text" id="res-3top" maxlength="3" placeholder="123" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-center font-mono font-bold text-amber-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1" data-i18n="prize_2bottom">รางวัล 2 ตัวล่าง</label>
+                    <input type="text" id="res-2bottom" maxlength="2" placeholder="45" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-center font-mono font-bold text-amber-500 text-sm">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="runLuckyCheck()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium text-xs shadow-md transition-all flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span data-i18n="btn_check_result">ตรวจผลรางวัล</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="checker-results-container" class="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <div class="text-center py-8 text-slate-400 text-xs" data-i18n="checker_placeholder">กรุณากรอกผลรางวัลและกดปุ่มตรวจผล</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOT NUMBERS MODAL -->
+    <div id="hotnumbers-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-xl w-full p-6 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-fire text-orange-500"></i>
+                    <span data-i18n="modal_hot_title">วิเคราะห์เลขดังยอดฮิต (Hot Numbers Analysis)</span>
+                </h3>
+                <button onclick="closeHotNumbersModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4" data-i18n="modal_hot_desc">สรุปอันดับเลขที่มีเพื่อนส่งเข้ามามากที่สุดและยอดเงินรวมสูงสุด</p>
+
+            <div id="hot-numbers-list" class="space-y-3">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPLOY GUIDE MODAL -->
+    <div id="deploy-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-xl w-full p-6 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-rocket text-emerald-500"></i>
+                    <span data-i18n="deploy_title">คู่มือการนำเว็บไซต์ขึ้น Vercel (Deployment Guide)</span>
+                </h3>
+                <button onclick="closeDeployModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-xs text-slate-600 dark:text-slate-300">
+                <div class="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+                    <h4 class="font-bold text-emerald-800 dark:text-emerald-300 mb-1" data-i18n="deploy_step1_title">วิธีที่ 1: ใช้ Vercel Web Dashboard (ง่ายที่สุด ไม่ต้องใช้ Command Line)</h4>
+                    <p data-i18n="deploy_step1_desc">1. บันทึกไฟล์หน้านี้เป็นชื่อ <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">index.html</code><br>2. ไปที่เว็บไซต์ <a href="https://vercel.com" target="_blank" class="text-emerald-600 underline font-semibold">Vercel.com</a> และสมัครสมาชิกฟรีด้วย GitHub หรือ Email<br>3. สร้าง Repository ใหม่บน GitHub แล้วอัปโหลดไฟล์ <code class="bg-emerald-100 dark:bg-emerald-900 px-1 py-0.5 rounded font-mono">index.html</code> ไว้ที่ Root<br>4. บน Vercel กดปุ่ม <strong>Add New... -> Project</strong> แล้วเลือก Import Repository ของคุณ<br>5. กด <strong>Deploy</strong> ได้ทันทีโดยไม่ต้องตั้งค่า Build Command ใดๆ เพราะเป็น Static HTML เพียวๆ!</p>
+                </div>
+                <div class="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800">
+                    <h4 class="font-bold text-blue-800 dark:text-blue-300 mb-1" data-i18n="deploy_step2_title">วิธีที่ 2: ใช้ Vercel CLI</h4>
+                    <p data-i18n="deploy_step2_desc">1. ติดตั้ง Vercel CLI ในเครื่อง: <code class="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded font-mono">npm i -g vercel</code><br>2. เปิด Terminal ในโฟลเดอร์ที่มีไฟล์นี้ แล้วพิมพ์คำสั่ง <code class="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded font-mono">vercel</code><br>3. ทำตามขั้นตอนบนจอเพื่อเผยแพร่เว็บรับ URL ทันที</p>
+                </div>
+            </div>
+            <div class="mt-6 text-right">
+                <button onclick="closeDeployModal()" class="px-4 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-medium" data-i18n="btn_close">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- Translations Dictionary (TH / ENG) ---
+        const translations = {
+            th: {
+                app_title: "LottoManager Enterprise",
+                app_subtitle: "ระบบจัดการและรวบรวมเลขเด็ดออนไลน์",
+                mode_user: "โหมดเพื่อน (User)",
+                mode_admin: "ผู้ดูแลระบบ (Admin)",
+                banner_title: "ระบบซิงค์ข้อมูลเรียลไทม์ (Live Sync Enabled)",
+                banner_desc: "เพื่อนกรอกข้อมูลในแท็บนี้ Admin จะเห็นข้อมูลอัปเดตทันทีผ่าน LocalStorage Broadcast",
+                btn_deploy_guide: "วิธีนำขึ้นเว็บ Vercel",
+                form_heading: "ส่งรายการเลขเด็ด",
+                form_subheading: "กรอกข้อมูลรายละเอียดเลขที่ต้องการส่งให้ผู้ดูแล",
+                label_sender: "ชื่อผู้ส่ง / กลุ่มเพื่อน *",
+                label_number: "เลขเด็ด *",
+                label_amount: "จำนวนเงิน (บาท) *",
+                label_type: "ประเภทเลขเด็ด *",
+                label_position: "เลือกรูปแบบเพิ่มเติม",
+                pos_top: "บน",
+                pos_bottom: "ล่าง (กลับ)",
+                label_note: "หมายเหตุ / โน้ตเพิ่มเติม",
+                btn_submit: "บันทึกและส่งข้อมูล",
+                my_submissions_title: "รายการที่คุณเคยส่งในเครื่องนี้",
+                my_submissions_sub: "ข้อมูลจะบันทึกอัตโนมัติบน LocalStorage",
+                stat_total_bills: "ยอดบิลทั้งหมด",
+                stat_total_items: "จำนวนรายการเลข",
+                stat_total_amount: "ยอดเงินรวมทั้งหมด",
+                stat_senders: "จำนวนเพื่อนผู้ส่ง",
+                filter_all_types: "ทุกประเภท",
+                filter_all_senders: "ทุกคนทุกกลุ่ม",
+                btn_add: "เพิ่มรายการ",
+                btn_checker: "ตรวจรางวัล",
+                btn_hot_numbers: "เลขดังยอดฮิต",
+                btn_export: "Export",
+                th_no: "#",
+                th_sender: "ผู้ส่ง / กลุ่ม",
+                th_number: "เลขเด็ด",
+                th_type: "ประเภท",
+                th_amount: "จำนวนเงิน",
+                th_note: "หมายเหตุ",
+                th_time: "เวลาที่ส่ง",
+                th_actions: "จัดการ",
+                empty_records: "ยังไม่มีรายการข้อมูลในระบบ",
+                modal_edit_title: "แก้ไขรายการเลขเด็ด",
+                modal_add_title: "เพิ่มรายการใหม่ (โดย Admin)",
+                modal_checker_title: "ระบบตรวจรางวัลจำลอง (Lucky Draw Checker)",
+                modal_checker_desc: "กรอกผลรางวัลที่ออกเพื่อตรวจสอบว่ามีเพื่อนคนไหนถูกรางวัลและคำนยอดเงินรางวัลจำลอง",
+                prize_3top: "รางวัล 3 ตัวบน",
+                prize_2bottom: "รางวัล 2 ตัวล่าง",
+                btn_check_result: "ตรวจผลรางวัล",
+                checker_placeholder: "กรุณากรอกผลรางวัลและกดปุ่มตรวจผล",
+                modal_hot_title: "วิเคราะห์เลขดังยอดฮิต (Hot Numbers Analysis)",
+                modal_hot_desc: "สรุปอันดับเลขที่มีเพื่อนส่งเข้ามามากที่สุดและยอดเงินรวมสูงสุด",
+                deploy_title: "คู่มือการนำเว็บไซต์ขึ้น Vercel (Deployment Guide)",
+                deploy_step1_title: "วิธีที่ 1: ใช้ Vercel Web Dashboard (ง่ายที่สุด)",
+                deploy_step1_desc: "1. บันทึกไฟล์หน้านี้เป็นชื่อ index.html<br>2. สมัครสมาชิก Vercel.com<br>3. สร้าง GitHub Repo และอัปโหลดไฟล์<br>4. Import Project บน Vercel แล้วกด Deploy ทันที",
+                deploy_step2_title: "วิธีที่ 2: ใช้ Vercel CLI",
+                deploy_step2_desc: "1. ติดตั้งคำสั่ง: npm i -g vercel<br>2. พิมพ์ vercel ในโฟลเดอร์เพื่อ Publish ทันที",
+                btn_cancel: "ยกเลิก",
+                btn_save: "บันทึกการแก้ไข",
+                btn_close: "ปิดหน้าต่าง"
+            },
+            en: {
+                app_title: "LottoManager Enterprise",
+                app_subtitle: "Professional Online Lottery Management System",
+                mode_user: "User Mode",
+                mode_admin: "Admin Mode",
+                banner_title: "Live Sync Enabled",
+                banner_desc: "Submissions sync in real-time across tabs via LocalStorage Broadcast.",
+                btn_deploy_guide: "Vercel Deploy Guide",
+                form_heading: "Submit Lotto Numbers",
+                form_subheading: "Fill in the details to submit your numbers to admin",
+                label_sender: "Sender Name / Group *",
+                label_number: "Lotto Number *",
+                label_amount: "Amount (THB) *",
+                label_type: "Number Type *",
+                label_position: "Additional Position",
+                pos_top: "Top",
+                pos_bottom: "Bottom (Reverse)",
+                label_note: "Note / Remarks",
+                btn_submit: "Save & Submit",
+                my_submissions_title: "Your Recent Submissions",
+                my_submissions_sub: "Saved automatically via LocalStorage",
+                stat_total_bills: "Total Bills",
+                stat_total_items: "Total Items",
+                stat_total_amount: "Total Amount",
+                stat_senders: "Total Senders",
+                filter_all_types: "All Types",
+                filter_all_senders: "All Senders",
+                btn_add: "Add Item",
+                btn_checker: "Lucky Checker",
+                btn_hot_numbers: "Hot Numbers",
+                btn_export: "Export",
+                th_no: "#",
+                th_sender: "Sender / Group",
+                th_number: "Number",
+                th_type: "Type",
+                th_amount: "Amount",
+                th_note: "Note",
+                th_time: "Timestamp",
+                th_actions: "Actions",
+                empty_records: "No records found in the system.",
+                modal_edit_title: "Edit Lotto Record",
+                modal_add_title: "Add New Record (Admin)",
+                modal_checker_title: "Lucky Draw Checker",
+                modal_checker_desc: "Enter draw results to check winners and simulate payout amounts.",
+                prize_3top: "3 Digits Top",
+                prize_2bottom: "2 Digits Bottom",
+                btn_check_result: "Check Results",
+                checker_placeholder: "Please enter winning numbers and click check.",
+                modal_hot_title: "Hot Numbers Analysis",
+                modal_hot_desc: "Summary ranking of most requested numbers and total amounts.",
+                deploy_title: "Vercel Deployment Guide",
+                deploy_step1_title: "Method 1: Vercel Web Dashboard (Easiest)",
+                deploy_step1_desc: "1. Save this file as index.html<br>2. Sign up on Vercel.com<br>3. Upload to GitHub repository<br>4. Import project on Vercel and deploy instantly.",
+                deploy_step2_title: "Method 2: Vercel CLI",
+                deploy_step2_desc: "1. Install CLI: npm i -g vercel<br>2. Run vercel in directory to publish instantly.",
+                btn_cancel: "Cancel",
+                btn_save: "Save Changes",
+                btn_close: "Close"
+            }
+        };
+
+        let currentLang = localStorage.getItem('lotto_lang') || 'th';
+        let currentTheme = localStorage.getItem('lotto_theme') || 'light';
+        let currentMode = 'user'; // 'user' or 'admin'
+
+        // Initialize application state storage
+        let lottoData = JSON.parse(localStorage.getItem('lotto_data_store')) || [
+            { id: '1', senderName: 'คุณสมชาย', lottoNumber: '24', lottoType: '2ตัวบน', lottoAmount: 150, lottoNote: 'เน้นๆ', timestamp: new Date(Date.now() - 3600000).toISOString() },
+            { id: '2', senderName: 'แก๊งสามช่า', lottoNumber: '589', lottoType: '3ตัวบน', lottoAmount: 300, lottoNote: 'ขอให้มา', timestamp: new Date(Date.now() - 1800000).toISOString() },
+            { id: '3', senderName: 'คุณหญิง', lottoNumber: '92', lottoType: '2ตัวล่าง', lottoAmount: 500, lottoNote: '', timestamp: new Date().toISOString() }
+        ];
+
+        // BroadcastChannel for cross-tab real-time sync
+        const lottoChannel = new BroadcastChannel('lotto_enterprise_channel');
+        lottoChannel.onmessage = (event) => {
+            if (event.data && event.data.type === 'SYNC_DATA') {
+                lottoData = event.data.payload;
+                renderAll();
+                showToast('ซิงค์ข้อมูลเรียลไทม์สำเร็จ', 'info');
+            }
+        };
+
+        function saveAndBroadcast() {
+            localStorage.setItem('lotto_data_store', JSON.stringify(lottoData));
+            lottoChannel.postMessage({ type: 'SYNC_DATA', payload: lottoData });
+        }
+
+        // --- Initialization on load ---
+        window.onload = function() {
+            applyTheme(currentTheme);
+            applyLanguage(currentLang);
+            renderAll();
+        };
+
+        function renderAll() {
+            renderUserHistory();
+            renderAdminDashboard();
+            renderAdminTable();
+            populateSenderFilter();
+        }
+
+        // --- Theme Toggle ---
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('lotto_theme', currentTheme);
+            applyTheme(currentTheme);
+        }
+
+        function applyTheme(theme) {
+            const htmlEl = document.documentElement;
+            const iconEl = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                htmlEl.classList.add('dark');
+                iconEl.className = 'fa-solid fa-sun text-amber-400';
+            } else {
+                htmlEl.classList.remove('dark');
+                iconEl.className = 'fa-solid fa-moon text-slate-600';
+            }
+        }
+
+        // --- Language Toggle ---
+        function toggleLanguage() {
+            currentLang = currentLang === 'th' ? 'en' : 'th';
+            localStorage.setItem('lotto_lang', currentLang);
+            applyLanguage(currentLang);
+            renderAll();
+        }
+
+        function applyLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.getElementById('lang-label').innerText = lang.toUpperCase();
+            const dict = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerHTML = dict[key];
+                }
+            });
+        }
+
+        // --- Mode Switcher ---
+        function switchMode(mode) {
+            currentMode = mode;
+            const btnUser = document.getElementById('btn-mode-user');
+            const btnAdmin = document.getElementById('btn-mode-admin');
+            const viewUser = document.getElementById('view-user');
+            const viewAdmin = document.getElementById('view-admin');
+
+            if (mode === 'user') {
+                btnUser.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm";
+                btnAdmin.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+                viewUser.classList.remove('hidden');
+                viewAdmin.classList.add('hidden');
+            } else {
+                btnAdmin.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm";
+                btnUser.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white";
+                viewAdmin.classList.remove('hidden');
+                viewUser.classList.add('hidden');
+                renderAdminDashboard();
+                renderAdminTable();
+            }
+        }
+
+        // --- Form Type Change Handler (User View) ---
+        function onTypeChange() {
+            const type = document.getElementById('lottoType').value;
+            const posContainer = document.getElementById('position-option-container');
+            if (type === '2ตัวบน' || type === '3ตัวบน') {
+                posContainer.classList.remove('hidden');
+            } else {
+                posContainer.classList.add('hidden');
+            }
+        }
+
+        // --- Form Submission (User) ---
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const senderName = document.getElementById('senderName').value.trim();
+            const lottoNumber = document.getElementById('lottoNumber').value.trim();
+            const lottoAmount = parseFloat(document.getElementById('lottoAmount').value);
+            let lottoType = document.getElementById('lottoType').value;
+            const lottoNote = document.getElementById('lottoNote').value.trim();
+
+            const isTopChecked = document.getElementById('posTop').checked;
+            const isBottomChecked = document.getElementById('posBottom').checked;
+            const posContainerVisible = !document.getElementById('position-option-container').classList.contains('hidden');
+
+            if (posContainerVisible && isTopChecked && isBottomChecked) {
+                // Split into two entries if both top & bottom (or reverse) are checked
+                const amountSplit = lottoAmount / 2;
+                lottoData.unshift({
+                    id: 'ID_' + Date.now() + '_1',
+                    senderName,
+                    lottoNumber,
+                    lottoType: lottoType,
+                    lottoAmount: amountSplit,
+                    lottoNote: lottoNote + ' (บน)',
+                    timestamp: new Date().toISOString()
+                });
+                
+                let reverseType = lottoType.includes('2') ? '2ตัวล่าง' : '3ตัวล่าง';
+                lottoData.unshift({
+                    id: 'ID_' + Date.now() + '_2',
+                    senderName,
+                    lottoNumber,
+                    lottoType: reverseType,
+                    lottoAmount: amountSplit,
+                    lottoNote: lottoNote + ' (ล่าง/กลับ)',
+                    timestamp: new Date().toISOString()
+                });
+            } else {
+                lottoData.unshift({
+                    id: 'ID_' + Date.now(),
+                    senderName,
+                    lottoNumber,
+                    lottoType,
+                    lottoAmount,
+                    lottoNote,
+                    timestamp: new Date().toISOString()
+                });
+            }
+
+            saveAndBroadcast();
+            renderAll();
+            document.getElementById('lotto-form').reset();
+            document.getElementById('position-option-container').classList.add('hidden');
+            showToast('บันทึกและส่งข้อมูลสำเร็จ!', 'success');
+        }
+
+        // --- Render User History ---
+        function renderUserHistory() {
+            const container = document.getElementById('user-history-list');
+            document.getElementById('user-total-count').innerText = `${lottoData.length} รายการ`;
+
+            if (lottoData.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">ยังไม่มีประวัติการส่งข้อมูล</div>`;
+                return;
+            }
+
+            container.innerHTML = lottoData.map(item => `
+                <div class="p-4 rounded-xl bg-slate-100/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between gap-4 transition-all hover:shadow-md">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 font-mono font-bold flex items-center justify-center text-base">
+                            ${item.lottoNumber}
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-sm text-slate-900 dark:text-white">${item.senderName}</span>
+                                <span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-[10px] font-semibold">${item.lottoType}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${item.lottoNote ? 'โน้ต: ' + item.lottoNote : 'ไม่มีหมายเหตุ'} • <span class="font-mono">${new Date(item.timestamp).toLocaleTimeString()}</span></p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">฿${item.lottoAmount.toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- Admin Dashboard Metrics ---
+        function renderAdminDashboard() {
+            const totalBills = lottoData.length;
+            const totalItems = lottoData.length;
+            const totalAmount = lottoData.reduce((sum, i) => sum + i.lottoAmount, 0);
+            const uniqueSenders = new Set(lottoData.map(i => i.senderName)).size;
+
+            document.getElementById('stat-bills').innerText = totalBills;
+            document.getElementById('stat-items').innerText = totalItems;
+            document.getElementById('stat-amount').innerText = '฿' + totalAmount.toLocaleString();
+            document.getElementById('stat-senders').innerText = uniqueSenders;
+        }
+
+        // --- Populate Sender Filter Dropdown ---
+        function populateSenderFilter() {
+            const select = document.getElementById('admin-filter-sender');
+            const currentVal = select.value;
+            const senders = [...new Set(lottoData.map(i => i.senderName))];
+            
+            let html = `<option value="all" data-i18n="filter_all_senders">ทุกคนทุกกลุ่ม</option>`;
+            senders.forEach(s => {
+                html += `<option value="${s}" ${currentVal === s ? 'selected' : ''}>${s}</option>`;
+            });
+            select.innerHTML = html;
+        }
+
+        // --- Render Admin Table ---
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            const emptyState = document.getElementById('admin-empty-state');
+            const searchQuery = document.getElementById('admin-search').value.toLowerCase();
+            const filterType = document.getElementById('admin-filter-type').value;
+            const filterSender = document.getElementById('admin-filter-sender').value;
+
+            const filtered = lottoData.filter(item => {
+                const matchSearch = item.senderName.toLowerCase().includes(searchQuery) || item.lottoNumber.includes(searchQuery) || (item.lottoNote && item.lottoNote.toLowerCase().includes(searchQuery));
+                const matchType = filterType === 'all' || item.lottoType === filterType;
+                const matchSender = filterSender === 'all' || item.senderName === filterSender;
+                return matchSearch && matchType && matchSender;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tbody.innerHTML = filtered.map((item, idx) => `
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="p-4 text-xs text-slate-500 font-mono">${idx + 1}</td>
+                    <td class="p-4 font-semibold text-slate-900 dark:text-white">${item.senderName}</td>
+                    <td class="p-4 font-mono font-bold text-emerald-600 dark:text-emerald-400 text-base">${item.lottoNumber}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">${item.lottoType}</span></td>
+                    <td class="p-4 text-right font-bold text-slate-900 dark:text-white">฿${item.lottoAmount.toLocaleString()}</td>
+                    <td class="p-4 text-xs text-slate-500 dark:text-slate-400">${item.lottoNote || '-'}</td>
+                    <td class="p-4 text-xs font-mono text-slate-400">${new Date(item.timestamp).toLocaleString()}</td>
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="openEditModal('${item.id}')" class="p-1.5 rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white transition-all" title="Edit">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button onclick="deleteRecord('${item.id}')" class="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition-all" title="Delete">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- Admin Record Operations (Add, Edit, Delete) ---
+        function openAddModal() {
+            document.getElementById('admin-add-form').reset();
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+        function handleAdminAddSubmit(e) {
+            e.preventDefault();
+            const senderName = document.getElementById('admin-senderName').value.trim();
+            const lottoNumber = document.getElementById('admin-lottoNumber').value.trim();
+            const lottoAmount = parseFloat(document.getElementById('admin-lottoAmount').value);
+            const lottoType = document.getElementById('admin-lottoType').value;
+            const lottoNote = document.getElementById('admin-lottoNote').value.trim();
+
+            lottoData.unshift({
+                id: 'ID_' + Date.now(),
+                senderName,
+                lottoNumber,
+                lottoType,
+                lottoAmount,
+                lottoNote,
+                timestamp: new Date().toISOString()
+            });
+
+            saveAndBroadcast();
+            renderAll();
+            closeAddModal();
+            showToast('เพิ่มรายการสำเร็จโดย Admin', 'success');
+        }
+
+        function openEditModal(id) {
+            const item = lottoData.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('edit-id').value = item.id;
+            document.getElementById('edit-senderName').value = item.senderName;
+            document.getElementById('edit-lottoNumber').value = item.lottoNumber;
+            document.getElementById('edit-lottoAmount').value = item.lottoAmount;
+            document.getElementById('edit-lottoType').value = item.lottoType;
+            document.getElementById('edit-lottoNote').value = item.lottoNote || '';
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+        function handleEditSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const index = lottoData.findIndex(i => i.id === id);
+            if (index !== -1) {
+                lottoData[index].senderName = document.getElementById('edit-senderName').value.trim();
+                lottoData[index].lottoNumber = document.getElementById('edit-lottoNumber').value.trim();
+                lottoData[index].lottoAmount = parseFloat(document.getElementById('edit-lottoAmount').value);
+                lottoData[index].lottoType = document.getElementById('edit-lottoType').value;
+                lottoData[index].lottoNote = document.getElementById('edit-lottoNote').value.trim();
+
+                saveAndBroadcast();
+                renderAll();
+                closeEditModal();
+                showToast('อัปเดตข้อมูลสำเร็จ', 'success');
+            }
+        }
+
+        function deleteRecord(id) {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?')) {
+                lottoData = lottoData.filter(i => i.id !== id);
+                saveAndBroadcast();
+                renderAll();
+                showToast('ลบรายการเรียบร้อยแล้ว', 'info');
+            }
+        }
+
+        // --- Lucky Draw Checker Modal ---
+        function openLuckyDrawModal() {
+            document.getElementById('luckydraw-modal').classList.remove('hidden');
+        }
+        function closeLuckyDrawModal() {
+            document.getElementById('luckydraw-modal').classList.add('hidden');
+        }
+        function runLuckyCheck() {
+            const res3Top = document.getElementById('res-3top').value.trim();
+            const res2Bottom = document.getElementById('res-2bottom').value.trim();
+            const container = document.getElementById('checker-results-container');
+
+            if (!res3Top && !res2Bottom) {
+                showToast('กรุณากรอกผลรางวัลอย่างน้อย 1 รางวัล', 'error');
+                return;
+            }
+
+            const res3BottomLast2 = res3Top.slice(-2); // 2ตัวท้ายของ 3ตัวบน สำหรับเช็คโต๊ดหรือล่างถ้าต้องการ
+            const res3TopReverse = res3Top.split('').reverse().join('');
+
+            let winners = [];
+            lottoData.forEach(item => {
+                let isWinner = false;
+                let multiplier = 0;
+
+                if (item.lottoType === '3ตัวบน' && item.lottoNumber === res3Top) {
+                    isWinner = true; multiplier = 900; // สมลองอัตราจ่าย 3ตัวบน
+                } else if (item.lottoType === '3ตัวโต๊ด' && (item.lottoNumber.split('').sort().join('') === res3Top.split('').sort().join(''))) {
+                    isWinner = true; multiplier = 150; // โต๊ด
+                } else if (item.lottoType === '2ตัวบน' && item.lottoNumber === res3BottomLast2) {
+                    isWinner = true; multiplier = 90; // 2ตัวบน
+                } else if (item.lottoType === '2ตัวล่าง' && item.lottoNumber === res2Bottom) {
+                    isWinner = true; multiplier = 90; // 2ตัวล่าง
+                } else if (item.lottoType === '3ตัวล่าง' && (item.lottoNumber === res3BottomLast2 || item.lottoNumber === res3TopReverse)) {
+                    isWinner = true; multiplier = 450;
+                }
+
+                if (isWinner) {
+                    winners.push({
+                        ...item,
+                        payout: item.lottoAmount * multiplier
+                    });
+                }
+            });
+
+            if (winners.length === 0) {
+                container.innerHTML = `<div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-center text-slate-500 text-xs">ไม่พบรายการที่ถูกรางวัลจากผลรางวัลนี้</div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-2">🎉 รายการที่ถูกรางวัล (${winners.length} รายการ):</h4>
+                <div class="space-y-2 max-h-60 overflow-y-auto">
+                    ${winners.map(w => `
+                        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between text-xs">
+                            <div>
+                                <span class="font-bold text-slate-900 dark:text-white">${w.senderName}</span> ส่งเลข <span class="font-mono font-bold text-amber-600">${w.lottoNumber}</span> (${w.lottoType})
+                            </div>
+                            <div class="text-right">
+                                <span class="text-slate-500">ทุน ฿${w.lottoAmount}</span> -> <span class="font-bold text-emerald-600">รับเงิน ฿${w.payout.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // --- Hot Numbers Analysis Modal ---
+        function openHotNumbersModal() {
+            const modal = document.getElementById('hotnumbers-modal');
+            const listContainer = document.getElementById('hot-numbers-list');
+
+            // Count frequencies and amounts
+            const stats = {};
+            lottoData.forEach(item => {
+                if (!stats[item.lottoNumber]) {
+                    stats[item.lottoNumber] = { count: 0, totalAmount: 0, types: new Set() };
+                }
+                stats[item.lottoNumber].count += 1;
+                stats[item.lottoNumber].totalAmount += item.lottoAmount;
+                stats[item.lottoNumber].types.add(item.lottoType);
+            });
+
+            const sortedHot = Object.entries(stats).sort((a, b) => b[1].totalAmount - a[1].totalAmount);
+
+            if (sortedHot.length === 0) {
+                listContainer.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">ยังไม่มีข้อมูลวิเคราะห์</div>`;
+            } else {
+                listContainer.innerHTML = sortedHot.map(([num, data], idx) => `
+                    <div class="p-3.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-orange-500 text-white font-bold flex items-center justify-center text-xs">
+                                #${idx + 1}
+                            </div>
+                            <div>
+                                <span class="font-mono font-bold text-base text-slate-900 dark:text-white">${num}</span>
+                                <p class="text-[11px] text-slate-500">ประเภท: ${[...data.types].join(', ')} (${data.count} บิล)</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm font-bold text-orange-600 dark:text-orange-400">฿${data.totalAmount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            modal.classList.remove('hidden');
+        }
+        function closeHotNumbersModal() {
+            document.getElementById('hotnumbers-modal').classList.add('hidden');
+        }
+
+        // --- Export Functions (CSV & Excel) ---
+        function exportCSV() {
+            let csvContent = "\uFEFFNo,Sender,Number,Type,Amount,Note,Timestamp\n";
+            lottoData.forEach((item, index) => {
+                csvContent += `"${index + 1}","${item.senderName}","${item.lottoNumber}","${item.lottoType}",${item.lottoAmount},"${item.lottoNote || ''}","${item.timestamp}"\n`;
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lotto_report_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            showToast('Export CSV สำเร็จ', 'success');
+        }
+
+        function exportExcel() {
+            let htmlTable = `<table border="1">
+                <tr><th>No</th><th>Sender</th><th>Number</th><th>Type</th><th>Amount</th><th>Note</th><th>Timestamp</th></tr>`;
+            lottoData.forEach((item, index) => {
+                htmlTable += `<tr><td>${index + 1}</td><td>${item.senderName}</td><td>${item.lottoNumber}</td><td>${item.lottoType}</td><td>${item.lottoAmount}</td><td>${item.lottoNote || ''}</td><td>${item.timestamp}</td></tr>`;
+            });
+            htmlTable += `</table>`;
+
+            const blob = new Blob([htmlTable], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lotto_report_${new Date().toISOString().slice(0,10)}.xls`;
+            a.click();
+            showToast('Export Excel (XLS) สำเร็จ', 'success');
+        }
+
+        // --- Deploy Guide Modal ---
+        function openDeployModal() {
+            document.getElementById('deploy-modal').classList.remove('hidden');
+        }
+        function closeDeployModal() {
+            document.getElementById('deploy-modal').classList.add('hidden');
+        }
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-rose-600' : 'bg-slate-900');
+            const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info');
+
+            toast.className = `px-4 py-3 rounded-xl text-white text-xs font-medium shadow-xl flex items-center space-x-2 pointer-events-auto animate-fade-in ${bgClass}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
