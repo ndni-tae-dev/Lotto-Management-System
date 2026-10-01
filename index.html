@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Number System</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23315EFB'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>N</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F7FB;--card:#fff;--tx:#172033;--mut:#6b7691;--pri:#315EFB;--bd:#e3e8f3;--ok:#16a34a;--bad:#dc2626;--sb:240px}
+[data-theme=dark]{--bg:#0B1020;--card:#12192B;--tx:#EDF2FF;--mut:#8f9bb8;--pri:#6D8CFF;--bd:#222c45}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:'IBM Plex Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--tx);transition:background .25s,color .25s;padding-top:env(safe-area-inset-top)}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--bd)}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--pri);color:#fff;display:grid;place-items:center;font-weight:600}
+header b{flex:1;font-weight:600}
+.chip{border:1px solid var(--bd);background:transparent;border-radius:999px;padding:6px 12px;cursor:pointer;transition:background .15s}
+.chip:hover{background:var(--bg)}
+nav.side{position:fixed;top:57px;bottom:0;left:0;width:var(--sb);padding:16px 12px;background:var(--card);border-right:1px solid var(--bd);display:flex;flex-direction:column;gap:4px}
+nav a{display:flex;gap:10px;padding:10px 12px;border-radius:10px;color:var(--mut);text-decoration:none;cursor:pointer;transition:background .15s,color .15s}
+nav a:hover{background:var(--bg)}nav a.on{background:color-mix(in srgb,var(--pri) 14%,transparent);color:var(--pri);font-weight:500}
+nav .sp{flex:1}
+main{margin-left:var(--sb);padding:24px;max-width:1100px}
+h1{font-size:1.5rem;margin:0 0 4px}h2{font-size:1.05rem;margin:24px 0 10px}.mut{color:var(--mut);font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px}
+.stat b{display:block;font-size:1.6rem;font-weight:600;margin-top:4px}
+.prize{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)}.prize:last-child{border:0}
+.prize b{font-size:1.4rem;letter-spacing:.12em}
+.big{font-size:2.6rem;letter-spacing:.2em;text-align:center;font-weight:600;color:var(--pri);padding:8px 0}
+label{display:block;margin:14px 0 6px;font-size:.9rem;color:var(--mut)}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);outline:none}
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+.seg{display:flex;gap:8px}.seg button{flex:1;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);cursor:pointer}
+.seg button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.btn{width:100%;margin-top:20px;padding:13px;border:0;border-radius:12px;background:var(--pri);color:#fff;font-weight:500;cursor:pointer;transition:transform .1s,filter .15s}
+.btn:hover{filter:brightness(1.08)}.btn:active{transform:scale(.98)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.row input,.row select{flex:1;min-width:120px;width:auto}.row .chip{flex:none}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mut);font-weight:500;font-size:.85rem}tbody tr{transition:background .12s}tbody tr:hover{background:var(--bg)}
+td.n{font-weight:600;letter-spacing:.08em}.del{border:0;background:none;color:var(--bad);cursor:pointer}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.banner{background:#fef3c7;color:#92400e;border-radius:10px;padding:8px 12px;font-size:.85rem;margin-bottom:12px}
+#toast{position:fixed;right:20px;bottom:20px;background:var(--tx);color:var(--bg);padding:12px 16px;border-radius:12px;transform:translateY(80px);opacity:0;transition:.3s;z-index:20;pointer-events:none}
+#toast.show{transform:none;opacity:1}
+.sk{height:60px;border-radius:12px;background:linear-gradient(90deg,var(--bd),var(--card),var(--bd));background-size:200%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200%}}
+.view{animation:in .25s ease-out}@keyframes in{from{opacity:0;transform:translateY(6px)}}
+nav.bot{display:none}
+@media(max-width:800px){nav.side{display:none}main{margin:0;padding:16px 16px 90px}
+nav.bot{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bd);padding:6px 6px calc(6px + env(safe-area-inset-bottom));justify-content:space-around;z-index:5}
+nav.bot a{flex-direction:column;align-items:center;gap:0;font-size:.75rem;padding:6px 10px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="logo">N</div><b>Number System</b>
+<button class="chip" id="th" aria-label="theme">🌙</button><button class="chip" id="lg">TH</button><button class="chip" id="ad"></button></header>
+<nav class="side" id="sn"></nav><nav class="bot" id="bn"></nav>
+<main id="app"></main><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s), LS=localStorage;
+const L={th:{home:'หน้าหลัก',add:'เพิ่มรายการ',list:'รายการทั้งหมด',res:'ผลรางวัล',hello:'สวัสดี 👋',sub:'ระบบจัดการรายการ',total:'รายการทั้งหมด',sum:'ยอดรวม',tc:'รายการวันนี้',ts:'เงินวันนี้',d2:'2 ตัว',d3:'3 ตัว',top:'บน',bot:'ล่าง',name:'ชื่อ',num:'เลข',type:'ประเภท',amt:'จำนวนเงิน',note:'หมายเหตุ',time:'เวลา',save:'บันทึกรายการ',saved:'บันทึกสำเร็จ',inv:'กรอกข้อมูลให้ครบ (เลข 2 หรือ 3 หลัก)',search:'ค้นหา...',all:'ทั้งหมด',exp:'Export CSV',latest:'รายการล่าสุด',lot:'ผลสลากกินแบ่งรัฐบาล',draw:'งวดวันที่',load:'โหลดผลรางวัล',p1:'รางวัลที่ 1',f3:'เลขหน้า 3 ตัว',b3:'เลขท้าย 3 ตัว',b2:'เลขท้าย 2 ตัว',src:'แหล่งข้อมูล: สำนักงานสลากกินแบ่งรัฐบาล',chk:'ตรวจเลข',chkb:'ตรวจผล',win:'ถูกรางวัล!',lose:'ไม่ถูกรางวัล',demo:'โหมดทดลอง: ยังไม่ได้ต่อที่เก็บข้อมูลร่วม ข้อมูลอยู่ในเครื่องนี้เท่านั้น',del:'ลบรายการนี้?',key:'ใส่รหัส Admin',err:'โหลดผลรางวัลไม่ได้',empty:'ยังไม่มีรายการ'},
+en:{home:'Home',add:'Add',list:'All requests',res:'Results',hello:'Hello 👋',sub:'Request management',total:'All requests',sum:'Total amount',tc:'Today',ts:'Today amount',d2:'2-digit',d3:'3-digit',top:'Top',bot:'Bottom',name:'Name',num:'Number',type:'Type',amt:'Amount',note:'Note',time:'Time',save:'Save request',saved:'Saved',inv:'Fill all fields (2 or 3 digit number)',search:'Search...',all:'All',exp:'Export CSV',latest:'Latest requests',lot:'Government Lottery Results',draw:'Draw date',load:'Load results',p1:'First prize',f3:'First 3 digits',b3:'Last 3 digits',b2:'Last 2 digits',src:'Source: Government Lottery Office (GLO)',chk:'Check number',chkb:'Check',win:'Winner!',lose:'No prize',demo:'Demo mode: shared storage not connected. Data stays on this device only.',del:'Delete this request?',key:'Enter admin key',err:'Could not load results',empty:'No requests yet'}};
+let lang=LS.lang||'th',theme=LS.theme||'light',view=location.hash.slice(1)||'home',E=[],demo=false,side='top',digits=2,flt='all',q='',R=null,adminKey=LS.adminKey||'';
+const t=k=>L[lang][k], baht=n=>'฿'+Number(n).toLocaleString();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=m=>{const e=$('#toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)};
+const api={
+ async list(){try{const r=await fetch('/api/entries');if(!r.ok)throw 0;demo=false;return await r.json()}catch{demo=true;return JSON.parse(LS.demo||'[]')}},
+ async add(e){if(!demo){const r=await fetch('/api/entries',{method:'POST',body:JSON.stringify(e)});if(r.ok)return}
+  const x={...e,digits:e.number.length,id:Date.now().toString(36),ts:Date.now()};LS.demo=JSON.stringify([x,...JSON.parse(LS.demo||'[]')])},
+ async del(id){if(demo){LS.demo=JSON.stringify(JSON.parse(LS.demo||'[]').filter(x=>x.id!==id));return}
+  const r=await fetch('/api/entries?id='+id,{method:'DELETE',headers:{'x-admin-key':adminKey}});if(!r.ok)toast('401')}};
+function applyChrome(){document.documentElement.dataset.theme=theme;document.documentElement.lang=lang;
+ $('#th').textContent=theme=='dark'?'☀️':'🌙';$('#lg').textContent=lang=='th'?'EN':'TH';$('#ad').textContent=adminKey?'👤 Admin ✓':'👤 Admin';
+ const items=[['home','🏠',t('home')],['add','➕',t('add')],['list','📋',t('list')],['res','🎯',t('res')]];
+ const h=items.map(i=>`<a href="#${i[0]}" class="${view==i[0]?'on':''}">${i[1]} <span>${i[2]}</span></a>`).join('');
+ $('#sn').innerHTML=h;$('#bn').innerHTML=h}
+function countUp(el){const to=+el.dataset.to,p=el.dataset.p||'';let s=null;const f=ts=>{s??=ts;const k=Math.min((ts-s)/700,1);el.textContent=p+Math.round(to*k).toLocaleString();if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
+const stat=(l,v,p='')=>`<div class="card stat"><span class="mut">${l}</span><b data-to="${v}" data-p="${p}">0</b></div>`;
+function renderHome(){const d=new Date().toDateString(),td=E.filter(e=>new Date(e.ts).toDateString()==d),sm=a=>a.reduce((s,e)=>s+e.amount,0),c=(a,f)=>a.filter(f).length;
+ return `<h1>${t('hello')}</h1><div class="mut">${t('sub')}</div>
+ <div class="grid">${stat(t('total'),E.length)}${stat(t('sum'),sm(E),'฿')}${stat(t('tc'),td.length)}${stat(t('ts'),sm(td),'฿')}${stat(t('d2'),c(E,e=>e.digits==2))}${stat(t('d3'),c(E,e=>e.digits==3))}${stat(t('top'),c(E,e=>e.side=='top'))}${stat(t('bot'),c(E,e=>e.side=='bottom'))}</div>
+ <h2>${t('lot')}</h2><div class="card" id="lotbox"><div class="sk"></div></div>
+ <h2>${t('latest')}</h2>${table(E.slice(0,8),false)}`}
+function table(rows,del){if(!rows.length)return `<div class="card mut">${t('empty')}</div>`;
+ return `<div class="card tw"><table><thead><tr><th>${t('name')}</th><th>${t('num')}</th><th>${t('type')}</th><th>${t('amt')}</th><th>${t('time')}</th>${del?'<th></th>':''}</tr></thead><tbody>${rows.map(e=>`<tr><td>${esc(e.name)}</td><td class="n">${esc(e.number)}</td><td>${e.digits} · ${t(e.side=='top'?'top':'bot')}</td><td>${baht(e.amount)}</td><td>${new Date(e.ts).toLocaleString(lang=='th'?'th-TH':'en-GB',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>${del&&adminKey?`<td><button class="del" data-id="${e.id}">✕</button></td>`:del?'<td></td>':''}</tr>`).join('')}</tbody></table></div>`}
+function renderAdd(){return `<h1>${t('add')}</h1><div class="card" style="max-width:480px;margin-top:16px">
+ <label>${t('name')}</label><input id="f-name" value="${esc(LS.myName||'')}" maxlength="40">
+ <label>${t('type')}</label><div class="seg" id="sd"><button data-v="2" class="${digits==2?'on':''}">${t('d2')}</button><button data-v="3" class="${digits==3?'on':''}">${t('d3')}</button></div>
+ <label>${t('num')}</label><input id="f-num" inputmode="numeric" maxlength="${digits}" placeholder="${digits==2?'29':'456'}">
+ <div class="seg" style="margin-top:10px" id="ss"><button data-v="top" class="${side=='top'?'on':''}">${t('top')}</button><button data-v="bottom" class="${side=='bottom'?'on':''}">${t('bot')}</button></div>
+ <label>${t('amt')}</label><input id="f-amt" inputmode="numeric" placeholder="฿ 100">
+ <label>${t('note')}</label><input id="f-note" maxlength="120">
+ <button class="btn" id="save">${t('save')}</button></div>`}
+function renderList(){const rows=E.filter(e=>(flt=='all'||(flt=='2'&&e.digits==2)||(flt=='3'&&e.digits==3)||flt==e.side)&&(e.name+e.number+(e.note||'')).toLowerCase().includes(q.toLowerCase()));
+ return `<h1>${t('list')} (${E.length})</h1><div class="row"><input id="q" placeholder="${t('search')}" value="${esc(q)}"><select id="fl">${[['all',t('all')],['2',t('d2')],['3',t('d3')],['top',t('top')],['bottom',t('bot')]].map(o=>`<option value="${o[0]}" ${flt==o[0]?'selected':''}>${o[1]}</option>`).join('')}</select><button class="chip" id="exp">${t('exp')}</button></div><div id="tb">${table(rows,true)}</div>`}
+function renderRes(){return `<h1>${t('lot')}</h1><div class="row"><input type="date" id="dt"><button class="chip" id="ld">${t('load')}</button></div><div class="card" id="lotbox"><div class="sk"></div></div>
+ <h2>${t('chk')}</h2><div class="card" style="max-width:420px"><input id="ck" inputmode="numeric" maxlength="6" placeholder="123456"><button class="btn" id="ckb" style="margin-top:12px">${t('chkb')}</button><div id="ckr" style="margin-top:12px"></div></div><p class="mut">${t('src')}</p>`}
+function parseLot(j){const r=j.response||{};const P=id=>((r.prizes||[]).find(x=>x.id==id)||{}).number||[],N=id=>((r.runningNumbers||[]).find(x=>x.id==id)||{}).number||[];
+ return{date:r.date,first:P('prizeFirst')[0],f3:N('runningNumberFrontThree'),b3:N('runningNumberBackThree'),b2:N('runningNumberBackTwo')[0]}}
+async function loadLot(date){const box=$('#lotbox');if(!box)return;box.innerHTML='<div class="sk"></div>';
+ try{const r=await fetch('/api/lottery'+(date?'?date='+date:''));R=parseLot(await r.json());if(!R.first)throw 0;
+  box.innerHTML=`<div class="mut">${t('draw')} ${new Date(R.date).toLocaleDateString(lang=='th'?'th-TH':'en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+  <div class="prize"><span>${t('p1')}</span><b>${R.first}</b></div><div class="prize"><span>${t('f3')}</span><b>${R.f3.join(' ')}</b></div><div class="prize"><span>${t('b3')}</span><b>${R.b3.join(' ')}</b></div><div class="prize"><span>${t('b2')}</span><b>${R.b2}</b></div>`}
+ catch{R=null;box.innerHTML=`<span class="mut">${t('err')}</span>`}}
+function check(){const n=$('#ck').value.trim(),o=$('#ckr');if(!R||n.length!=6){o.innerHTML=`<span class="mut">${t('err')}</span>`;return}
+ const hits=[];if(n==R.first)hits.push(t('p1'));if(R.f3.includes(n.slice(0,3)))hits.push(t('f3'));if(R.b3.includes(n.slice(3)))hits.push(t('b3'));if(n.slice(4)==R.b2)hits.push(t('b2'));
+ o.innerHTML=`<div class="big">${n}</div>`+(hits.length?`<div class="ok">✓ ${t('win')} ${hits.join(', ')}</div>`:`<div class="bad">${t('lose')}</div>`)}
+function bind(){
+ document.querySelectorAll('[data-to]').forEach(countUp);
+ if(view=='home')loadLot();
+ if(view=='add'){$('#sd').onclick=e=>{if(e.target.dataset.v){digits=+e.target.dataset.v;render()}};$('#ss').onclick=e=>{if(e.target.dataset.v){side=e.target.dataset.v;render()}};
+  $('#save').onclick=async()=>{const e={name:$('#f-name').value.trim(),number:$('#f-num').value.replace(/\D/g,''),side,amount:+$('#f-amt').value.replace(/\D/g,''),note:$('#f-note').value};
+   if(!e.name||e.number.length!=digits||!e.amount)return toast(t('inv'));LS.myName=e.name;await api.add(e);E=await api.list();toast(`✓ ${t('saved')}: ${e.number} · ${digits} · ${t(side=='top'?'top':'bot')} · ${baht(e.amount)}`);$('#f-num').value='';$('#f-amt').value=''}}
+ if(view=='list'){$('#q').oninput=e=>{q=e.target.value;$('#tb').innerHTML=table(filtered(),true);delBind()};$('#fl').onchange=e=>{flt=e.target.value;render()};$('#exp').onclick=exportCsv;delBind()}
+ if(view=='res'){loadLot();$('#ld').onclick=()=>loadLot($('#dt').value);$('#ckb').onclick=check}}
+const filtered=()=>E.filter(e=>(flt=='all'||(flt=='2'&&e.digits==2)||(flt=='3'&&e.digits==3)||flt==e.side)&&(e.name+e.number+(e.note||'')).toLowerCase().includes(q.toLowerCase()));
+function delBind(){document.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{if(confirm(t('del'))){await api.del(b.dataset.id);E=await api.list();render()}})}
+function exportCsv(){const rows=[['name','number','digits','side','amount','note','time'],...filtered().map(e=>[e.name,e.number,e.digits,e.side,e.amount,e.note||'',new Date(e.ts).toISOString()])];
+ const csv='\ufeff'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='entries.csv';a.click()}
+function render(){applyChrome();const v={home:renderHome,add:renderAdd,list:renderList,res:renderRes}[view]||renderHome;
+ $('#app').innerHTML=(demo?`<div class="banner">${t('demo')}</div>`:'')+`<div class="view">${v()}</div>`;bind()}
+$('#th').onclick=()=>{theme=theme=='dark'?'light':'dark';LS.theme=theme;applyChrome()};
+$('#lg').onclick=()=>{lang=lang=='th'?'en':'th';LS.lang=lang;render()};
+$('#ad').onclick=()=>{if(adminKey){adminKey='';LS.adminKey=''}else{const k=prompt(t('key'));if(k){adminKey=k;LS.adminKey=k}}render()};
+addEventListener('hashchange',()=>{view=location.hash.slice(1)||'home';render()});
+(async()=>{applyChrome();E=await api.list();render();setInterval(async()=>{if(view=='home'||view=='list'){E=await api.list();if(!document.activeElement||document.activeElement.tagName!='INPUT')render()}},15000)})();
+</script>
+</body>
+</html>
