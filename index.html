@@ -1,112 +1,160 @@
 <!DOCTYPE html>
-<html lang="th" class="dark">
+<html lang="th" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Management Enterprise System</title>
+    <title>Lotto Pro - Pastel Minimalist Enterprise</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .dark .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        @keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .animate-pulse-subtle { animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        
+        /* Pastel Minimalist Light & Dark Theme Variables & Cards */
+        .light .pastel-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(226, 232, 240, 0.5);
+        }
+        .dark .pastel-card {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(51, 65, 85, 0.6);
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.5);
+        }
+        
+        .light body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .dark body {
+            background-color: #0b0f19;
+            color: #e2e8f0;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableArea, #printableArea * { visibility: visible; }
+            #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
+        }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+<body class="min-h-screen transition-colors duration-300">
 
-    <!-- Top Navigation Bar -->
-    <header class="sticky top-0 z-40 backdrop-blur-md bg-white/80 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3.5 transition-colors">
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-800 px-4 lg:px-8 py-3.5 transition-colors">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
             <!-- Brand Logo -->
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('user')">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 text-xl font-bold">
-                    <i class="fa-solid fa-ticket"></i>
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('tab-home')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-300 via-amber-200 to-emerald-300 dark:from-pink-900 dark:to-emerald-900 flex items-center justify-center text-slate-800 dark:text-slate-100 shadow-sm text-lg font-black">
+                    <i class="fa-solid fa-clover"></i>
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent" data-i18n="brand_title">Lotto Pro System</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" data-i18n="brand_subtitle">Secure Enterprise Betting Platform</p>
+                    <h1 class="font-extrabold text-base tracking-tight bg-gradient-to-r from-pink-500 via-amber-500 to-emerald-500 bg-clip-text text-transparent">Lotto Pastel Pro</h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Minimalist Enterprise System</p>
                 </div>
             </div>
 
-            <!-- Status Banner & Controls -->
-            <div class="flex items-center flex-wrap gap-3">
-                <!-- Betting Status Badge -->
-                <div id="bettingStatusBadge" class="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                    <span id="statusText">เปิดรับแทงอยู่</span>
+            <!-- Status Badge & Controls -->
+            <div class="flex items-center flex-wrap gap-2.5">
+                <div id="bettingStatusBadge" class="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="statusText">เปิดรับแทงปกติ</span>
                 </div>
 
-                <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300" title="Toggle Theme">
-                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300 shadow-sm" title="Toggle Theme">
+                    <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
                 </button>
 
-                <!-- Language Toggle -->
-                <button onclick="toggleLang()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-xs font-bold text-slate-700 dark:text-slate-300">
-                    <span id="langLabel">TH / EN</span>
+                <button onclick="toggleLang()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-xs font-bold text-slate-700 dark:text-slate-300 shadow-sm">
+                    <span id="langLabel">TH</span>
                 </button>
 
-                <!-- Admin Access Button -->
-                <button onclick="openAdminModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-100 dark:to-slate-200 text-white dark:text-slate-900 text-xs font-bold shadow-md hover:opacity-95 transition flex items-center gap-2">
-                    <i class="fa-solid fa-lock text-amber-400 dark:text-amber-600"></i>
-                    <span data-i18n="admin_btn">Admin Portal</span>
+                <button onclick="openAdminModal()" class="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold shadow-md hover:opacity-95 transition flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-amber-400"></i>
+                    <span>Admin</span>
                 </button>
             </div>
         </div>
+
+        <!-- Tab Navigation Bar -->
+        <div class="max-w-7xl mx-auto mt-3 overflow-x-auto no-scrollbar flex items-center gap-2 pb-1 border-t border-slate-200/50 dark:border-slate-800/50 pt-3">
+            <button onclick="switchTab('tab-home')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-pink-500 text-white shadow-sm" data-target="tab-home">
+                <i class="fa-solid fa-house-chimney"></i> <span data-i18n="nav_home">1. หน้าแรก/ส่งโพย</span>
+            </button>
+            <button onclick="switchTab('tab-entries')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-entries">
+                <i class="fa-solid fa-list-check"></i> <span data-i18n="nav_entries">2. รายการโพยทั้งหมด</span>
+            </button>
+            <button onclick="switchTab('tab-summary')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-summary">
+                <i class="fa-solid fa-address-book"></i> <span data-i18n="nav_summary">3. สรุปยอดตามรายชื่อ</span>
+            </button>
+            <button onclick="switchTab('tab-dashboard')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-dashboard">
+                <i class="fa-solid fa-chart-pie"></i> <span data-i18n="nav_dashboard">4. Dashboard สถิติ</span>
+            </button>
+            <button onclick="switchTab('tab-news')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-news">
+                <i class="fa-solid fa-bullhorn"></i> <span data-i18n="nav_news">5. ข่าวสาร & ประกาศ</span>
+            </button>
+            <button onclick="switchTab('tab-history')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-history">
+                <i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="nav_history">6. ประวัติย้อนหลัง</span>
+            </button>
+            <button onclick="switchTab('tab-stats')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-stats">
+                <i class="fa-solid fa-chart-line"></i> <span data-i18n="nav_stats">7. สถิติออกรางวัล</span>
+            </button>
+            <button onclick="switchTab('tab-generator')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-generator">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="nav_generator">8. สุ่มเลขนำโชค</span>
+            </button>
+            <button onclick="switchTab('tab-receipt')" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" data-target="tab-receipt">
+                <i class="fa-solid fa-receipt"></i> <span data-i18n="nav_receipt">9.พิมพ์ใบเสร็จ/Admin</span>
+            </button>
+        </div>
     </header>
 
-    <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
-        
-        <!-- ================= USER / SUBMIT VIEW ================= -->
-        <div id="userView" class="space-y-8">
-            <!-- Notice Banner & Countdown -->
-            <div class="glass-card rounded-3xl p-6 shadow-xl relative overflow-hidden border-l-4 border-emerald-500">
-                <div class="absolute -right-10 -bottom-10 text-emerald-500/10 dark:text-emerald-400/5 text-9xl pointer-events-none">
-                    <i class="fa-solid fa-coins"></i>
-                </div>
+
+        <!-- TAB 1: HOME / SUBMIT FORM -->
+        <div id="tab-home" class="tab-content space-y-8">
+            <div class="pastel-card rounded-3xl p-6 lg:p-8 shadow-xl relative overflow-hidden border-l-4 border-pink-400">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
                     <div>
-                        <span class="px-3 py-1 rounded-lg text-xs font-extrabold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 uppercase tracking-wider" data-i18n="official_period">งวดประจำวันที่ 16 ตุลาคม 2569</span>
-                        <h2 class="text-2xl lg:text-3xl font-black mt-2 tracking-tight" data-i18n="welcome_title">ส่งโพยหวยออนไลน์ ปลอดภัย แม่นยำ</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1" data-i18n="welcome_desc">กรอกข้อมูลรายการของท่านให้ครบถ้วน ระบบจะบันทึกและส่งตรงถึงผู้ดูแลระบบทันที</p>
+                        <span class="px-3 py-1 rounded-lg text-xs font-extrabold bg-pink-500/10 text-pink-600 dark:text-pink-400 uppercase tracking-wider" data-i18n="official_period">งวดประจำวันที่ 16 ตุลาคม 2569</span>
+                        <h2 class="text-2xl lg:text-3xl font-black mt-2 tracking-tight" data-i18n="welcome_title">ส่งโพยหวยสไตล์พาสเทล มินิมอล</h2>
+                        <p class="text-xs lg:text-sm text-slate-500 dark:text-slate-400 mt-1" data-i18n="welcome_desc">ระบบบันทึกและคำนวณอัตโนมัติ รวดเร็ว แม่นยำ ปลอดภัย และเชื่อมต่อแบบ Real-time</p>
                     </div>
                     <div class="bg-white/80 dark:bg-slate-900/80 px-6 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center">
-                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider" data-i18n="time_left">เวลาปิดรับอัตโนมัติ</div>
-                        <div id="countdownTimer" class="text-xl font-black text-rose-500 mt-1">00:00:00</div>
+                        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="time_left">เวลาปิดรับอัตโนมัติ</div>
+                        <div id="countdownTimer" class="text-xl font-black text-rose-500 mt-1">14:00:00</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Submission Form & Rate Card Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Left Column: Form -->
-                <div class="lg:col-span-2 glass-card rounded-3xl p-6 lg:p-8 shadow-xl">
-                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2.5">
-                        <span class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-pen-to-square"></i></span>
-                        <span data-i18n="form_header">ฟอร์มกรอกรายการโพย</span>
+                <!-- Form Column -->
+                <div class="lg:col-span-2 pastel-card rounded-3xl p-6 lg:p-8 shadow-xl">
+                    <h3 class="text-base font-bold mb-6 flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-pink-500/10 text-pink-500 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-pen-nib"></i></span>
+                        <span data-i18n="form_header">ฟอร์มกรอกรายการโพยหวย</span>
                     </h3>
 
                     <form id="lottoForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="label_name">ชื่อผู้ส่ง / นามแฝง *</label>
-                            <input type="text" id="userName" required placeholder="เช่น คุณสมชาย หรือ ชื่อเล่นกลุ่ม" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition font-medium text-sm">
+                            <input type="text" id="userName" required placeholder="เช่น คุณมินิมอล หรือ ทีมงานพาสเทล" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-pink-400 outline-none transition font-medium text-xs">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="label_number">เลขที่ต้องการแทง (ตัวเลข) *</label>
-                                <input type="text" id="lottoNumber" required placeholder="เช่น 45 หรือ 789" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition font-bold text-lg text-emerald-600 dark:text-emerald-400">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="label_number">เลขที่ต้องการแทง *</label>
+                                <input type="text" id="lottoNumber" required placeholder="เช่น 45 หรือ 789" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-pink-400 outline-none transition font-bold text-lg text-pink-600 dark:text-pink-400">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="label_type">ประเภทการแทง *</label>
-                                <select id="lottoType" onchange="handleTypeChange()" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition font-medium text-sm">
+                                <select id="lottoType" onchange="handleTypeChange()" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-pink-400 outline-none transition font-medium text-xs">
                                     <option value="2ตัวบน">2 ตัวบน</option>
                                     <option value="2ตัวล่าง">2 ตัวล่าง</option>
                                     <option value="3ตัวบน">3 ตัวบน</option>
@@ -118,132 +166,83 @@
                             </div>
                         </div>
 
-                        <!-- Extra helper for 2/3 digits option -->
-                        <div id="reverseBox" class="flex items-center gap-3 bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-xl border border-emerald-200/50 dark:border-emerald-900/50">
-                            <input type="checkbox" id="isReverse" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
-                            <label for="isReverse" class="text-xs font-semibold cursor-pointer select-none text-emerald-800 dark:text-emerald-300" data-i18n="reverse_label">กลับเลขให้อัตโนมัติ (เช่น กลับไป-กลับมา หรือสลับตำแหน่ง)</label>
+                        <div id="reverseBox" class="flex items-center gap-3 bg-pink-50/50 dark:bg-pink-950/20 p-3.5 rounded-xl border border-pink-200/50 dark:border-pink-900/50">
+                            <input type="checkbox" id="isReverse" class="w-4 h-4 text-pink-500 rounded focus:ring-pink-400">
+                            <label for="isReverse" class="text-xs font-semibold cursor-pointer select-none text-pink-900 dark:text-pink-300" data-i18n="reverse_label">กลับเลขให้อัตโนมัติ (เช่น กลับไป-กลับมา หรือสลับตำแหน่ง)</label>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="label_amount">จำนวนเงินรวม (บาท) *</label>
-                                <input type="number" id="lottoAmount" required min="1" placeholder="ระบุจำนวนเงิน" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition font-bold text-sm">
+                                <input type="number" id="lottoAmount" required min="1" placeholder="ระบุจำนวนเงิน" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-pink-400 outline-none transition font-bold text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2" data-i18n="label_note">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
-                                <input type="text" id="lottoNote" placeholder="เช่น เน้นหนักเป็นพิเศษ" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition font-medium text-sm">
+                                <input type="text" id="lottoNote" placeholder="เช่น เน้นโชคลาภพิเศษ" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-pink-400 outline-none transition font-medium text-sm">
                             </div>
                         </div>
 
-                        <button type="submit" id="submitBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-base shadow-lg shadow-emerald-600/25 transition active:scale-[0.99] flex items-center justify-center gap-2">
+                        <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-pink-400 via-amber-400 to-emerald-400 hover:opacity-95 text-slate-900 font-extrabold text-base shadow-lg shadow-pink-500/15 transition active:scale-[0.99] flex items-center justify-center gap-2">
                             <i class="fa-solid fa-paper-plane"></i>
-                            <span data-i18n="submit_btn">ยืนยันส่งโพยเข้าสู่ระบบ</span>
+                            <span data-i18n="submit_btn">ยืนยันส่งโพยเข้าสู่ระบบทันที</span>
                         </button>
                     </form>
                 </div>
 
-                <!-- Right Column: Rates & Info Card -->
+                <!-- Rates & Recent Submits Column -->
                 <div class="space-y-6">
-                    <div class="glass-card rounded-3xl p-6 shadow-xl">
-                        <h3 class="text-base font-bold mb-4 flex items-center gap-2">
+                    <div class="pastel-card rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-sm font-bold mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-coins text-amber-500"></i>
-                            <span data-i18n="rates_title">อัตราการจ่ายเงินรางวัล (Pay Rates)</span>
+                            <span data-i18n="rates_title">อัตราจ่ายเงินรางวัล</span>
                         </h3>
-                        <div class="space-y-3 text-xs">
-                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 font-medium">
-                                <span>3 ตัวบน</span>
-                                <span class="font-bold text-emerald-600 dark:text-emerald-400">บาทละ 900</span>
+                        <div class="space-y-2.5 text-xs">
+                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 font-medium">
+                                <span>3 ตัวบน</span> <span class="font-bold text-pink-600 dark:text-pink-400">บาทละ 900</span>
                             </div>
-                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 font-medium">
-                                <span>3 ตัวโต๊ด</span>
-                                <span class="font-bold text-emerald-600 dark:text-emerald-400">บาทละ 150</span>
+                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 font-medium">
+                                <span>3 ตัวโต๊ด</span> <span class="font-bold text-pink-600 dark:text-pink-400">บาทละ 150</span>
                             </div>
-                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 font-medium">
-                                <span>3 ตัวล่าง / หน้า</span>
-                                <span class="font-bold text-emerald-600 dark:text-emerald-400">บาทละ 450</span>
+                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 font-medium">
+                                <span>3 ตัวล่าง / หน้า</span> <span class="font-bold text-pink-600 dark:text-pink-400">บาทละ 450</span>
                             </div>
-                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 font-medium">
-                                <span>2 ตัวบน / ล่าง</span>
-                                <span class="font-bold text-emerald-600 dark:text-emerald-400">บาทละ 90</span>
+                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 font-medium">
+                                <span>2 ตัวบน / ล่าง</span> <span class="font-bold text-pink-600 dark:text-pink-400">บาทละ 90</span>
                             </div>
-                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 font-medium">
-                                <span>วิ่งบน / วิ่งล่าง</span>
-                                <span class="font-bold text-emerald-600 dark:text-emerald-400">บาทละ 3 / 4</span>
+                            <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 font-medium">
+                                <span>วิ่งบน / วิ่งล่าง</span> <span class="font-bold text-pink-600 dark:text-pink-400">บาทละ 3 / 4</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- User History Preview -->
-                    <div class="glass-card rounded-3xl p-6 shadow-xl">
-                        <h3 class="text-base font-bold mb-3 flex items-center justify-between">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-blue-500"></i><span data-i18n="recent_submits">รายการที่คุณส่งล่าสุด</span></span>
-                            <span id="userCountBadge" class="px-2 py-0.5 bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold">0 รายการ</span>
+                    <div class="pastel-card rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-sm font-bold mb-3 flex items-center justify-between">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-emerald-500"></i><span data-i18n="recent_submits">โพยล่าสุด</span></span>
+                            <span id="userCountBadge" class="px-2 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 rounded-lg text-xs font-bold">0</span>
                         </h3>
-                        <div id="userSubmitsList" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
-                            <p class="text-slate-400 text-center py-4" data-i18n="no_records">ยังไม่มีประวัติการส่งข้อมูลในเครื่องนี้</p>
+                        <div id="userSubmitsList" class="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs">
+                            <p class="text-slate-400 text-center py-4" data-i18n="no_records">ยังไม่มีรายการโพย</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= ADMIN / MANAGEMENT VIEW ================= -->
-        <div id="adminView" class="hidden space-y-8">
-            <!-- Admin Header Banner -->
-            <div class="glass-card rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-l-4 border-amber-500">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-3 py-1 rounded-lg text-xs font-extrabold bg-amber-500/10 text-amber-600 dark:text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-shield-halved"></i> Admin Control Center</span>
-                        <span class="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">Live Sync Enabled</span>
+        <!-- TAB 2: ALL ENTRIES TABLE -->
+        <div id="tab-entries" class="tab-content hidden space-y-6">
+            <div class="pastel-card rounded-3xl p-6 shadow-xl space-y-4">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-black" data-i18n="nav_entries">รายการโพยทั้งหมดในระบบ</h3>
+                        <p class="text-xs text-slate-400">ตรวจสอบ กรอง ค้นหา และบริหารจัดการโพยทั้งหมดแบบ Real-time</p>
                     </div>
-                    <h2 class="text-2xl font-black mt-2" data-i18n="admin_panel_title">ระบบจัดการและสรุปยอดรวมทั้งหมด</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">จัดการ ตรวจสอบ แก้ไข หรือลบรายการ พร้อมระบบตรวจรางวัลอัตโนมัติ</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="switchView('user')" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-bold transition flex items-center gap-2">
-                        <i class="fa-solid fa-arrow-left"></i> <span data-i18n="back_to_user">กลับสู่หน้าหลัก</span>
-                    </button>
-                    <button onclick="logoutAdmin()" class="px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-rose-500/20">
-                        <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout_btn">ออกจากระบบ Admin</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats Overview Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div class="glass-card rounded-2xl p-5 shadow-lg border-l-4 border-blue-500">
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-400" data-i18n="stat_total_items">จำนวนโพยทั้งหมด</div>
-                    <div id="statTotalItems" class="text-3xl font-black mt-2 text-slate-800 dark:text-white">0</div>
-                    <div class="text-xs text-slate-500 mt-1">รายการจากเพื่อนๆ ทุกคน</div>
-                </div>
-                <div class="glass-card rounded-2xl p-5 shadow-lg border-l-4 border-emerald-500">
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-400" data-i18n="stat_total_amount">ยอดเงินรวมทั้งหมด</div>
-                    <div id="statTotalAmount" class="text-3xl font-black mt-2 text-emerald-600 dark:text-emerald-400">0 ฿</div>
-                    <div class="text-xs text-slate-500 mt-1">คำนวณจากทุกรายการแทง</div>
-                </div>
-                <div class="glass-card rounded-2xl p-5 shadow-lg border-l-4 border-amber-500">
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-400" data-i18n="stat_unique_friends">จำนวนผู้ร่วมสนุก</div>
-                    <div id="statUniqueFriends" class="text-3xl font-black mt-2 text-amber-500">0 คน</div>
-                    <div class="text-xs text-slate-500 mt-1">รายชื่อเพื่อนที่ไม่ซ้ำกัน</div>
-                </div>
-                <div class="glass-card rounded-2xl p-5 shadow-lg border-l-4 border-purple-500">
-                    <div class="text-xs font-bold uppercase tracking-wider text-slate-400" data-i18n="stat_top_number">เลขยอดฮิตสูงสุด</div>
-                    <div id="statTopNumber" class="text-2xl font-black mt-2 text-purple-600 dark:text-purple-400 truncate">-</div>
-                    <div class="text-xs text-slate-500 mt-1">มีคนแทงซ้ำมากที่สุด</div>
-                </div>
-            </div>
-
-            <!-- Control Toolbar: Search, Filter, Actions -->
-            <div class="glass-card rounded-3xl p-6 shadow-xl space-y-4">
-                <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
-                    <!-- Search & Filter -->
-                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto flex-1">
-                        <div class="relative flex-1 min-w-[240px]">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                            <input type="text" id="searchInput" oninput="renderAdminTable()" placeholder="ค้นหาชื่อ, เลข, หรือหมายเหตุ..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-medium">
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="searchInput" oninput="renderEntriesTable()" placeholder="ค้นหาชื่อ, เลข..." class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium outline-none">
                         </div>
-                        <select id="filterType" onchange="renderAdminTable()" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium outline-none">
-                            <option value="all">ทุกประเภทการแทง</option>
+                        <select id="filterType" onchange="renderEntriesTable()" class="px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium outline-none">
+                            <option value="all">ทุกประเภท</option>
                             <option value="2ตัวบน">2 ตัวบน</option>
                             <option value="2ตัวล่าง">2 ตัวล่าง</option>
                             <option value="3ตัวบน">3 ตัวบน</option>
@@ -252,128 +251,342 @@
                             <option value="วิ่งบน">วิ่งบน</option>
                             <option value="วิ่งล่าง">วิ่งล่าง</option>
                         </select>
-                    </div>
-
-                    <!-- Export & Action Buttons -->
-                    <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-end">
-                        <button onclick="toggleBettingStatus()" id="toggleStatusBtn" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition flex items-center gap-2 shadow-md">
-                            <i class="fa-solid fa-toggle-on"></i> <span id="toggleStatusLabel">ปิดรับแทงชั่วคราว</span>
-                        </button>
-                        <button onclick="exportCSV()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-2 shadow-md">
-                            <i class="fa-solid fa-file-csv"></i> Export CSV
-                        </button>
-                        <button onclick="exportExcel()" class="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-2 shadow-md">
-                            <i class="fa-solid fa-file-excel"></i> Export Excel
-                        </button>
-                        <button onclick="clearAllData()" class="px-3 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white text-xs font-bold transition border border-rose-300 dark:border-rose-800" title="ล้างข้อมูลทั้งหมด">
-                            <i class="fa-solid fa-trash-can"></i>
+                        <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs shadow hover:opacity-90 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-excel">></i> Export CSV
                         </button>
                     </div>
                 </div>
 
-                <!-- Lucky Draw Checker Box -->
-                <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
-                            <i class="fa-solid fa-trophy"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold">ตรวจผลรางวัล (Lucky Draw Checker)</h4>
-                            <p class="text-xs text-slate-500">ใส่ผลรางวัลเพื่อคำนวณหาผู้โชคดีและยอดเงินรางวัลที่ต้องจ่ายอัตโนมัติ</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                        <input type="text" id="win3Top" placeholder="3 ตัวบน" maxlength="3" class="w-24 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-center">
-                        <input type="text" id="win2Bottom" placeholder="2 ตัวล่าง" maxlength="2" class="w-24 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-center">
-                        <button onclick="checkWinningResults()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition shadow-md">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> ตรวจรางวัล
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Data Table -->
-            <div class="glass-card rounded-3xl shadow-xl overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse text-xs">
                         <thead>
-                            <tr class="bg-slate-100 dark:bg-slate-900/90 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                                <th class="p-4 font-bold">#</th>
-                                <th class="p-4 font-bold" data-i18n="th_name">ชื่อผู้ส่ง</th>
-                                <th class="p-4 font-bold" data-i18n="th_number">เลขแทง</th>
-                                <th class="p-4 font-bold" data-i18n="th_type">ประเภท</th>
-                                <th class="p-4 font-bold text-right" data-i18n="th_amount">จำนวนเงิน (฿)</th>
-                                <th class="p-4 font-bold" data-i18n="th_note">หมายเหตุ</th>
-                                <th class="p-4 font-bold" data-i18n="th_time">เวลาที่ส่ง</th>
-                                <th class="p-4 font-bold text-center" data-i18n="th_action">จัดการ</th>
+                            <tr class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                <th class="p-3.5">#</th>
+                                <th class="p-3.5">ชื่อผู้ส่ง</th>
+                                <th class="p-3.5">เลขแทง</th>
+                                <th class="p-3.5">ประเภท</th>
+                                <th class="p-3.5 text-right">จำนวนเงิน (฿)</th>
+                                <th class="p-3.5">หมายเหตุ</th>
+                                <th class="p-3.5">เวลาที่ส่ง</th>
+                                <th class="p-3.5 text-center">จัดการ</th>
                             </tr>
                         </thead>
-                        <tbody id="adminTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 text-xs font-medium">
-                            <!-- Rows injected via JS -->
-                        </tbody>
+                        <tbody id="entriesTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 font-medium"></tbody>
                     </table>
                 </div>
-                <div id="emptyTableState" class="text-center py-12 hidden">
-                    <i class="fa-regular fa-folder-open text-4xl text-slate-400 mb-3"></i>
-                    <p class="text-sm font-semibold text-slate-500" data-i18n="no_data_found">ไม่พบข้อมูลรายการในระบบ</p>
+                <div id="emptyEntriesState" class="text-center py-12 hidden text-slate-400 text-xs">
+                    ไม่พบข้อมูลโพยหวยในระบบ
                 </div>
             </div>
         </div>
+
+        <!-- TAB 3: SUMMARY BY NAME -->
+        <div id="tab-summary" class="tab-content hidden space-y-6">
+            <div class="pastel-card rounded-3xl p-6 shadow-xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-black" data-i18n="nav_summary">สรุปยอดรวมแยกตามรายชื่อ</h3>
+                        <p class="text-xs text-slate-400">ยอดเงินรวม ยยอดโพย และผลคำนวณเงินรางวัล (หากตรวจผลแล้ว)</p>
+                    </div>
+                    <button onclick="renderSummaryByName()" class="px-4 py-2 rounded-xl bg-pink-100 text-pink-600 dark:bg-pink-950 dark:text-pink-300 text-xs font-bold hover:opacity-80 transition">
+                        <i class="fa-solid fa-rotate"></i> อัปเดตยอด
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                <th class="p-3.5">ชื่อผู้ร่วมสนุก</th>
+                                <th class="p-3.5 text-center">จำนวนโพย</th>
+                                <th class="p-3.5 text-right">ยอดแทงรวม (฿)</th>
+                                <th class="p-3.5 text-right">เงินรางวัลที่ได้รับ (฿)</th>
+                                <th class="p-3.5 text-center">พิมพ์บิล</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 font-medium"></tbody>
+                    </table>
+                </div>
+                <div id="emptySummaryState" class="text-center py-12 hidden text-slate-400 text-xs">
+                    ยังไม่มีข้อมูลสรุปยอดรายชื่อ
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: DASHBOARD & CHARTS -->
+        <div id="tab-dashboard" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="pastel-card rounded-2xl p-5 shadow-lg border-l-4 border-pink-400">
+                    <div class="text-xs font-bold uppercase text-slate-400">โพยทั้งหมด</div>
+                    <div id="dashTotalItems" class="text-3xl font-black mt-2 text-slate-800 dark:text-white">0</div>
+                    <div class="text-xs text-slate-500 mt-1">รายการจากสมาชิก</div>
+                </div>
+                <div class="pastel-card rounded-2xl p-5 shadow-lg border-l-4 border-amber-400">
+                    <div class="text-xs font-bold uppercase text-slate-400">ยอดเงินรวมทั้งสิ้น</div>
+                    <div id="dashTotalAmount" class="text-3xl font-black mt-2 text-amber-500">0 ฿</div>
+                    <div class="text-xs text-slate-500 mt-1">เงินหมุนเวียนในงวดนี้</div>
+                </div>
+                <div class="pastel-card rounded-2xl p-5 shadow-lg border-l-4 border-emerald-400">
+                    <div class="text-xs font-bold uppercase text-slate-400">จำนวนสมาชิก</div>
+                    <div id="dashTotalBettors" class="text-3xl font-black mt-2 text-emerald-600 dark:text-emerald-400">0 คน</div>
+                    <div class="text-xs text-slate-500 mt-1">รายชื่อที่ไม่ซ้ำกัน</div>
+                </div>
+                <div class="pastel-card rounded-2xl p-5 shadow-lg border-l-4 border-purple-400">
+                    <div class="text-xs font-bold uppercase text-slate-400">เลขนิยมสูงสุด</div>
+                    <div id="dashTopNumber" class="text-2xl font-black mt-2 text-purple-600 dark:text-purple-400 truncate">-</div>
+                    <div class="text-xs text-slate-500 mt-1">มีคนแทงซ้ำมากที่สุด</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="pastel-card rounded-3xl p-6 shadow-xl space-y-4">
+                    <h3 class="text-sm font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-chart-bar text-pink-500"></i> สัดส่วนยอดแทงตามประเภทหวย
+                    </h3>
+                    <div id="typeBreakdownBars" class="space-y-3 pt-2"></div>
+                </div>
+                <div class="pastel-card rounded-3xl p-6 shadow-xl space-y-4">
+                    <h3 class="text-sm font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-ranking-star text-amber-500"></i> 5 อันดับเลขนิยมยอดฮิต
+                    </h3>
+                    <div id="topNumbersList" class="space-y-2 pt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: NEWS & ANNOUNCEMENTS -->
+        <div id="tab-news" class="tab-content hidden space-y-6">
+            <div class="pastel-card rounded-3xl p-6 lg:p-8 shadow-xl space-y-6">
+                <h3 class="text-lg font-black" data-i18n="nav_news">ข่าวสารและประกาศจากผู้ดูแลระบบ</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-pink-50/60 dark:bg-pink-950/20 border border-pink-200/60 dark:border-pink-900/40 space-y-3">
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-pink-500 text-white uppercase">ประกาศสำคัญ</span>
+                        <h4 class="font-extrabold text-base">เปิดรับแทงงวด 16 ตุลาคม 2569 แล้ววันนี้!</h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            ระบบเปิดให้บริการส่งโพยหวยออนไลน์อย่างเป็นทางการ ปิดรับเวลา 14:00 น. สมาชิกทุกท่านสามารถตรวจสอบยอดและพิมพ์ใบเสร็จได้ทันที
+                        </p>
+                        <div class="text-[11px] text-slate-400 font-medium">เผยแพร่เมื่อ: 1 ตุลาคม 2569</div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 space-y-3">
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-amber-500 text-white uppercase">โปรโมชั่นพิเศษ</span>
+                        <h4 class="font-extrabold text-base">ปรับอัตราจ่าย 3 ตัวบน สูงสุดบาทละ 900!</h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            ทางระบบได้ปรับเพิ่มอัตราจ่าย 3 ตัวบน เป็นบาทละ 900 และ 2 ตัวบน/ล่าง เป็นบาทละ 90 เต็มพิกัดไม่มีอั้น
+                        </p>
+                        <div class="text-[11px] text-slate-400 font-medium">เผยแพร่เมื่อ: 28 กันยายน 2569</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: HISTORICAL DRAW RESULTS -->
+        <div id="tab-history" class="tab-content hidden space-y-6">
+            <div class="pastel-card rounded-3xl p-6 lg:p-8 shadow-xl space-y-6">
+                <h3 class="text-lg font-black" data-i18n="nav_history">ประวัติการออกรางวัลย้อนหลัง</h3>
+                <div class="space-y-4">
+                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <span class="text-xs font-bold text-pink-500 uppercase">งวดประจำวันที่ 1 กันยายน 2569</span>
+                            <div class="text-base font-extrabold mt-1">รางวัลที่ 1: <span class="text-emerald-500">482931</span></div>
+                            <div class="text-xs text-slate-400 mt-0.5">3 ตัวหน้า: 412, 891 | 3 ตัวท้าย: 502, 114 | 2 ตัวล่าง: 88</div>
+                        </div>
+                        <span class="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 text-xs font-bold">ออกผลแล้ว</span>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <span class="text-xs font-bold text-pink-500 uppercase">งวดประจำวันที่ 16 สิงหาคม 2569</span>
+                            <div class="text-base font-extrabold mt-1">รางวัลที่ 1: <span class="text-emerald-500">912405</span></div>
+                            <div class="text-xs text-slate-400 mt-0.5">3 ตัวหน้า: 104, 332 | 3 ตัวท้าย: 620, 819 | 2 ตัวล่าง: 53</div>
+                        </div>
+                        <span class="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 text-xs font-bold">ออกผลแล้ว</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 7: DRAW STATISTICS -->
+        <div id="tab-stats" class="tab-content hidden space-y-6">
+            <div class="pastel-card rounded-3xl p-6 lg:p-8 shadow-xl space-y-6">
+                <h3 class="text-lg font-black" data-i18n="nav_stats">สถิติการออกรางวัลย้อนหลัง (Frequency Analysis)</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div class="p-4 rounded-2xl bg-pink-50/60 dark:bg-pink-950/30 text-center border border-pink-200/50">
+                        <div class="text-2xl font-black text-pink-600 dark:text-pink-400">3</div>
+                        <div class="text-xs text-slate-500 mt-1">ออกบ่อยสุด (14 ครั้ง)</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 text-center border border-amber-200/50">
+                        <div class="text-2xl font-black text-amber-500">8</div>
+                        <div class="text-xs text-slate-500 mt-1">อันดับ 2 (12 ครั้ง)</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 text-center border border-emerald-200/50">
+                        <div class="text-2xl font-black text-emerald-600">5</div>
+                        <div class="text-xs text-slate-500 mt-1">อันดับ 3 (11 ครั้ง)</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-purple-50/60 dark:bg-purple-950/30 text-center border border-purple-200/50">
+                        <div class="text-2xl font-black text-purple-600">1</div>
+                        <div class="text-xs text-slate-500 mt-1">อันดับ 4 (10 ครั้ง)</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 text-center border border-blue-200/50">
+                        <div class="text-2xl font-black text-blue-600">9</div>
+                        <div class="text-xs text-slate-500 mt-1">อันดับ 5 (9 ครั้ง)</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/30 text-center border border-rose-200/50">
+                        <div class="text-2xl font-black text-rose-600">0</div>
+                        <div class="text-xs text-slate-500 mt-1">น้อยสุด (4 ครั้ง)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 8: LUCKY NUMBER GENERATOR -->
+        <div id="tab-generator" class="tab-content hidden space-y-6">
+            <div class="pastel-card rounded-3xl p-6 lg:p-8 shadow-xl max-w-xl mx-auto space-y-6 text-center">
+                <div>
+                    <span class="px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-500 uppercase tracking-wider">Lucky Generator</span>
+                    <h3 class="text-xl font-black mt-2" data-i18n="nav_generator">เครื่องมือสุ่มเลขเด็ดนำโชค</h3>
+                    <p class="text-xs text-slate-400 mt-1">สุ่มเลขมงคล 2 ตัว หรือ 3 ตัว เพื่อนำไปแทงในระบบทันที</p>
+                </div>
+
+                <div class="py-8 px-4 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <div id="luckyNumberDisplay" class="text-6xl font-black tracking-widest text-pink-600 dark:text-pink-400 animate-pulse">---</div>
+                    <div id="luckyNumberType" class="text-xs font-semibold text-slate-400 mt-2">กดปุ่มด้านล่างเพื่อเริ่มสุ่ม</div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="generateLuckyNumber(2)" class="px-6 py-3 rounded-xl bg-pink-500 text-white font-bold text-xs shadow-md hover:opacity-90 transition">
+                        <i class="fa-solid fa-dice"></i> สุ่มเลข 2 ตัว
+                    </button>
+                    <button onclick="generateLuckyNumber(3)" class="px-6 py-3 rounded-xl bg-amber-500 text-white font-bold text-xs shadow-md hover:opacity-90 transition">
+                        <i class="fa-solid fa-dice"></i> สุ่มเลข 3 ตัว
+                    </button>
+                    <button onclick="transferLuckyToForm()" id="transferLuckyBtn" disabled class="px-6 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-400 font-bold text-xs cursor-not-allowed transition">
+                        <i class="fa-solid fa-arrow-right"></i> นำไปกรอกในฟอร์ม
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 9: RECEIPT GENERATOR & ADMIN -->
+        <div id="tab-receipt" class="tab-content hidden space-y-6">
+            <div class="pastel-card rounded-3xl p-6 lg:p-8 shadow-xl max-w-xl mx-auto space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-black" data-i18n="nav_receipt">ระบบพิมพ์ใบเสร็จ / บิลโพย</h3>
+                        <p class="text-xs text-slate-400">เลือกรายชื่อเพื่อนเพื่อสร้างใบเสร็จรับเงินแบบมินิมอล</p>
+                    </div>
+                    <select id="receiptUserSelect" onchange="generateReceipt()" class="px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none"></select>
+                </div>
+
+                <div id="printableArea" class="bg-white text-slate-800 p-8 rounded-2xl shadow-inner border border-slate-200 space-y-4">
+                    <div class="text-center pb-4 border-b border-dashed border-slate-300">
+                        <div class="w-10 h-10 rounded-xl bg-pink-500 text-white mx-auto flex items-center justify-center text-base font-bold mb-2">
+                            <i class="fa-solid fa-clover"></i>
+                        </div>
+                        <h4 class="font-extrabold text-base">LOTTO PASTEL PRO RECEIPT</h4>
+                        <p class="text-[11px] text-slate-500">งวดประจำวันที่ 16 ตุลาคม 2569</p>
+                        <p id="receiptTime" class="text-[10px] text-slate-400 mt-1"></p>
+                    </div>
+
+                    <div class="text-xs space-y-1">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">ชื่อผู้ส่ง:</span>
+                            <span id="receiptName" class="font-bold">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">รหัสใบเสร็จ:</span>
+                            <span id="receiptId" class="font-mono font-bold">-</span>
+                        </div>
+                    </div>
+
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-400">
+                                <th class="py-2">เลขแทง</th>
+                                <th class="py-2">ประเภท</th>
+                                <th class="py-2 text-right">จำนวนเงิน (฿)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receiptItemsBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+
+                    <div class="pt-4 border-t border-dashed border-slate-300 flex justify-between items-center text-sm font-black">
+                        <span>ยอดเงินรวมทั้งสิ้น:</span>
+                        <span id="receiptTotalAmount" class="text-pink-600">0 ฿</span>
+                    </div>
+                </div>
+
+                <button onclick="window.print()" class="w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i> พิมพ์ใบเสร็จรับเงิน / บันทึก PDF
+                </button>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
     <footer class="max-w-7xl mx-auto px-4 lg:px-8 py-8 text-center text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800 mt-12">
-        <p>&copy; 2026 Lotto Management Enterprise System. Real-Time Collaboration Enabled.</p>
+        <p>&copy; 2026 Lotto Pastel Pro Enterprise System. Real-Time Collaboration & Storage Enabled.</p>
     </footer>
 
-    <!-- ================= ADMIN LOGIN MODAL ================= -->
+    <!-- Admin Portal Modal -->
     <div id="adminModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-md rounded-3xl p-6 lg:p-8 shadow-2xl relative border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-200">
-            <button onclick="closeAdminModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg">
+        <div class="pastel-card w-full max-w-md rounded-3xl p-6 lg:p-8 shadow-2xl relative">
+            <button onclick="closeAdminModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="text-center mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 mx-auto flex items-center justify-center text-2xl font-bold mb-3 shadow-inner">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h3 class="text-xl font-black" data-i18n="admin_login_title">เข้าสู่ระบบผู้ดูแลระบบ</h3>
-                <p class="text-xs text-slate-500 mt-1" data-i18n="admin_login_desc">กรุณากรอกรหัสผ่าน 6 หลักเพื่อเข้าใช้งานส่วน Admin</p>
+                <h3 class="text-xl font-black">เข้าสู่ระบบผู้ดูแลระบบ</h3>
+                <p class="text-xs text-slate-400 mt-1">กรุณากรอกรหัสผ่าน 6 หลัก (PIN: 110943)</p>
             </div>
-
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <input type="password" id="adminPinInput" required maxlength="6" placeholder="••••••" class="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center font-black tracking-widest text-xl outline-none focus:ring-2 focus:ring-amber-500">
-                </div>
-                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-sm shadow-lg shadow-amber-500/25 transition">
-                    <span data-i18n="admin_login_btn">ยืนยันรหัสผ่าน</span>
-                </button>
+                <input type="password" id="adminPinInput" required maxlength="6" placeholder="••••••" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center font-black tracking-widest text-xl outline-none focus:ring-2 focus:ring-amber-500">
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm shadow-lg transition">ยืนยันรหัสผ่าน</button>
             </form>
+
+            <div id="adminActionsBox" class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 hidden space-y-4">
+                <div class="text-xs font-bold text-emerald-600 text-center">✓ เข้าสู่ระบบผู้ดูแลสำเร็จ</div>
+                <div class="flex flex-col gap-2.5">
+                    <button onclick="toggleBettingStatus()" id="adminToggleBtn" class="w-full py-2.5 rounded-xl bg-amber-500 text-white font-bold text-xs shadow transition">สลับสถานะเปิด/ปิดรับแทง</button>
+                    
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 space-y-2">
+                        <div class="text-xs font-bold text-slate-500">ตรวจผลรางวัลอัตโนมัติ</div>
+                        <div class="flex gap-2">
+                            <input type="text" id="win3Top" placeholder="3 ตัวบน" maxlength="3" class="w-1/2 px-2 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-xs font-bold text-center border border-slate-200 dark:border-slate-700">
+                            <input type="text" id="win2Bottom" placeholder="2 ตัวล่าง" maxlength="2" class="w-1/2 px-2 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-xs font-bold text-center border border-slate-200 dark:border-slate-700">
+                        </div>
+                        <button onclick="checkWinningResults()" class="w-full py-2 rounded-xl bg-purple-600 text-white text-xs font-bold shadow hover:bg-purple-700 transition">คำนวณเงินรางวัลผู้ถูกรางวัล</button>
+                    </div>
+
+                    <button onclick="clearAllData()" class="w-full py-2.5 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white font-bold text-xs transition border border-rose-300">ล้างข้อมูลโพยทั้งหมดในระบบ</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ================= EDIT ITEM MODAL ================= -->
+    <!-- Edit Item Modal -->
     <div id="editModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-md rounded-3xl p-6 lg:p-8 shadow-2xl relative border border-slate-200 dark:border-slate-800">
-            <button onclick="closeEditModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg">
+        <div class="pastel-card w-full max-w-md rounded-3xl p-6 lg:p-8 shadow-2xl relative">
+            <button onclick="closeEditModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-pen-to-square text-emerald-500"></i> แก้ไขข้อมูลรายการ
+            <h3 class="text-base font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-pink-500"></i> แก้ไขข้อมูลโพย
             </h3>
             <form onsubmit="saveEditedItem(event)" class="space-y-4">
                 <input type="hidden" id="editId">
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-400 mb-1">ชื่อผู้ส่ง</label>
-                    <input type="text" id="editName" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold outline-none">
+                    <input type="text" id="editName" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-400 mb-1">เลขแทง</label>
-                        <input type="text" id="editNumber" required maxlength="3" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none">
+                        <input type="text" id="editNumber" required maxlength="3" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-400 mb-1">ประเภท</label>
-                        <select id="editType" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold outline-none">
+                        <select id="editType" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold outline-none">
                             <option value="2ตัวบน">2 ตัวบน</option>
                             <option value="2ตัวล่าง">2 ตัวล่าง</option>
                             <option value="3ตัวบน">3 ตัวบน</option>
@@ -387,167 +600,101 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-400 mb-1">จำนวนเงิน (฿)</label>
-                        <input type="number" id="editAmount" required min="1" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none">
+                        <input type="number" id="editAmount" required min="1" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-400 mb-1">หมายเหตุ</label>
-                        <input type="text" id="editNote" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium outline-none">
+                        <input type="text" id="editNote" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium outline-none">
                     </div>
                 </div>
-                <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition mt-2">
-                    บันทึกการแก้ไข
-                </button>
+                <button type="submit" class="w-full py-3 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs shadow-md transition mt-2">บันทึกการแก้ไข</button>
             </form>
         </div>
     </div>
 
-    <!-- ================= WINNERS MODAL ================= -->
-    <div id="winnersModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="glass-card w-full max-w-2xl rounded-3xl p-6 lg:p-8 shadow-2xl relative border border-slate-200 dark:border-slate-800">
-            <button onclick="closeWinnersModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl font-bold">
-                    <i class="fa-solid fa-award"></i>
-                </div>
-                <div>
-                    <h3 class="text-xl font-black">ผลการตรวจรางวัล</h3>
-                    <p class="text-xs text-slate-500" id="drawSummaryText">สรุปรายชื่อผู้ถูกรางวัลตามผลรางวัลที่กำหนด</p>
-                </div>
-            </div>
-            <div class="max-h-96 overflow-y-auto pr-1">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-slate-100 dark:bg-slate-900 text-slate-400 uppercase">
-                            <th class="p-3">ชื่อเพื่อน</th>
-                            <th class="p-3">เลขที่แทง</th>
-                            <th class="p-3">ประเภท</th>
-                            <th class="p-3 text-right">แทง (฿)</th>
-                            <th class="p-3 text-right">ถูกรางวัล (฿)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="winnersTableBody" class="divide-y divide-slate-200 dark:divide-slate-800">
-                        <!-- Injected -->
-                    </tbody>
-                </table>
-            </div>
-            <div id="noWinnersState" class="text-center py-8 hidden text-slate-400 text-xs">
-                ไม่พบผู้ถูกรางวัลสำหรับผลรางวัลนี้
-            </div>
-        </div>
-    </div>
-
-    <!-- Application Script -->
     <script>
-        // --- State Management ---
-        let lottoData = JSON.parse(localStorage.getItem('lotto_pro_data')) || [];
-        let isBettingOpen = JSON.parse(localStorage.getItem('lotto_betting_status')) !== false;
-        let currentLang = localStorage.getItem('lotto_lang') || 'th';
+        let lottoData = JSON.parse(localStorage.getItem('lotto_pastel_data')) || [];
+        let isBettingOpen = JSON.parse(localStorage.getItem('lotto_pastel_status')) !== false;
+        let currentLang = localStorage.getItem('lotto_pastel_lang') || 'th';
+        let winningResultsCache = JSON.parse(localStorage.getItem('lotto_pastel_winners')) || {};
         const ADMIN_PIN = "110943";
 
-        // Broadcast Channel for Real-Time Sync across tabs
-        const channel = new BroadcastChannel('lotto_sync_channel');
+        const channel = new BroadcastChannel('lotto_pastel_sync');
         channel.onmessage = (event) => {
-            if (event.data && event.data.type === 'SYNC_DATA') {
+            if (event.data && event.data.type === 'SYNC') {
                 lottoData = event.data.payload.lottoData;
                 isBettingOpen = event.data.payload.isBettingOpen;
+                winningResultsCache = event.data.payload.winningResultsCache || {};
                 updateUIAll();
             }
         };
 
         function broadcastState() {
             channel.postMessage({
-                type: 'SYNC_DATA',
-                payload: { lottoData, isBettingOpen }
+                type: 'SYNC',
+                payload: { lottoData, isBettingOpen, winningResultsCache }
             });
-            localStorage.setItem('lotto_pro_data', JSON.stringify(lottoData));
-            localStorage.setItem('lotto_betting_status', JSON.stringify(isBettingOpen));
+            localStorage.setItem('lotto_pastel_data', JSON.stringify(lottoData));
+            localStorage.setItem('lotto_pastel_status', JSON.stringify(isBettingOpen));
+            localStorage.setItem('lotto_pastel_winners', JSON.stringify(winningResultsCache));
         }
 
-        // --- Localization Dictionary ---
         const i18n = {
             th: {
-                brand_title: "Lotto Pro System",
-                brand_subtitle: "ระบบจัดการโพยหวยออนไลน์อัจฉริยะ",
+                nav_home: "1. หน้าแรก/ส่งโพย",
+                nav_entries: "2. รายการโพยทั้งหมด",
+                nav_summary: "3. สรุปยอดตามรายชื่อ",
+                nav_dashboard: "4. Dashboard สถิติ",
+                nav_news: "5. ข่าวสาร & ประกาศ",
+                nav_history: "6. ประวัติย้อนหลัง",
+                nav_stats: "7. สถิติออกรางวัล",
+                nav_generator: "8. สุ่มเลขนำโชค",
+                nav_receipt: "9.พิมพ์ใบเสร็จ/Admin",
                 official_period: "งวดประจำวันที่ 16 ตุลาคม 2569",
-                welcome_title: "ส่งโพยหวยออนไลน์ ปลอดภัย แม่นยำ",
-                welcome_desc: "กรอกข้อมูลรายการของท่านให้ครบถ้วน ระบบจะบันทึกและส่งตรงถึงผู้ดูแลระบบทันที",
+                welcome_title: "ส่งโพยหวยสไตล์พาสเทล มินิมอล",
+                welcome_desc: "ระบบบันทึกและคำนวณอัตโนมัติ รวดเร็ว แม่นยำ ปลอดภัย และเชื่อมต่อแบบ Real-time",
                 time_left: "เวลาปิดรับอัตโนมัติ",
-                form_header: "ฟอร์มกรอกรายการโพย",
+                form_header: "ฟอร์มกรอกรายการโพยหวย",
                 label_name: "ชื่อผู้ส่ง / นามแฝง *",
-                label_number: "เลขที่ต้องการแทง (ตัวเลข) *",
+                label_number: "เลขที่ต้องการแทง *",
                 label_type: "ประเภทการแทง *",
                 reverse_label: "กลับเลขให้อัตโนมัติ (เช่น กลับไป-กลับมา หรือสลับตำแหน่ง)",
                 label_amount: "จำนวนเงินรวม (บาท) *",
                 label_note: "หมายเหตุเพิ่มเติม (ถ้ามี)",
-                submit_btn: "ยืนยันส่งโพยเข้าสู่ระบบ",
-                rates_title: "อัตราการจ่ายเงินรางวัล (Pay Rates)",
-                recent_submits: "รายการที่คุณส่งล่าสุด",
-                no_records: "ยังไม่มีประวัติการส่งข้อมูลในเครื่องนี้",
-                admin_btn: "Admin Portal",
-                admin_panel_title: "ระบบจัดการและสรุปยอดรวมทั้งหมด",
-                back_to_user: "กลับสู่หน้าหลัก",
-                logout_btn: "ออกจากระบบ Admin",
-                stat_total_items: "จำนวนโพยทั้งหมด",
-                stat_total_amount: "ยอดเงินรวมทั้งหมด",
-                stat_unique_friends: "จำนวนผู้ร่วมสนุก",
-                stat_top_number: "เลขยอดฮิตสูงสุด",
-                th_name: "ชื่อผู้ส่ง",
-                th_number: "เลขแทง",
-                th_type: "ประเภท",
-                th_amount: "จำนวนเงิน (฿)",
-                th_note: "หมายเหตุ",
-                th_time: "เวลาที่ส่ง",
-                th_action: "จัดการ",
-                no_data_found: "ไม่พบข้อมูลรายการในระบบ",
-                admin_login_title: "เข้าสู่ระบบผู้ดูแลระบบ",
-                admin_login_desc: "กรุณากรอกรหัสผ่าน 6 หลักเพื่อเข้าใช้งานส่วน Admin",
-                admin_login_btn: "ยืนยันรหัสผ่าน"
+                submit_btn: "ยืนยันส่งโพยเข้าสู่ระบบทันที",
+                rates_title: "อัตราจ่ายเงินรางวัล",
+                recent_submits: "โพยล่าสุด"
             },
             en: {
-                brand_title: "Lotto Pro System",
-                brand_subtitle: "Secure Enterprise Betting Platform",
+                nav_home: "1. Submit Lotto",
+                nav_entries: "2. All Entries",
+                nav_summary: "3. Summary by Name",
+                nav_dashboard: "4. Analytics Dashboard",
+                nav_news: "5. News & Updates",
+                nav_history: "6. Historical Draws",
+                nav_stats: "7. Draw Statistics",
+                nav_generator: "8. Lucky Generator",
+                nav_receipt: "9. Receipt & Admin",
                 official_period: "Official Draw: October 16, 2026",
-                welcome_title: "Submit Your Lotto Entry Securely",
-                welcome_desc: "Fill in your betting details accurately. Entries sync instantly with the administrator.",
+                welcome_title: "Pastel Minimalist Lotto Submission",
+                welcome_desc: "Automated calculation, secure storage, and real-time synchronization.",
                 time_left: "Auto-Close Countdown",
-                form_header: "Betting Submission Form",
-                label_name: "Your Name / Alias *",
+                form_header: "Betting Entry Form",
+                label_name: "Sender Name / Alias *",
                 label_number: "Lotto Number *",
                 label_type: "Betting Type *",
                 reverse_label: "Auto-reverse numbers (Permutations)",
                 label_amount: "Total Amount (THB) *",
                 label_note: "Additional Note (Optional)",
-                submit_btn: "Submit Entry to System",
+                submit_btn: "Submit Entry Instantly",
                 rates_title: "Payout Rates",
-                recent_submits: "Your Recent Submissions",
-                no_records: "No submission records found on this device.",
-                admin_btn: "Admin Portal",
-                admin_panel_title: "Admin Management & Summary Dashboard",
-                back_to_user: "Back to User View",
-                logout_btn: "Logout Admin",
-                stat_total_items: "Total Submissions",
-                stat_total_amount: "Total Amount",
-                stat_unique_friends: "Total Bettors",
-                stat_top_number: "Top Trending Number",
-                th_name: "Sender Name",
-                th_number: "Number",
-                th_type: "Type",
-                th_amount: "Amount (฿)",
-                th_note: "Note",
-                th_time: "Timestamp",
-                th_action: "Actions",
-                no_data_found: "No submission records available.",
-                admin_login_title: "Admin Portal Login",
-                admin_login_desc: "Please enter the 6-digit PIN to access admin controls.",
-                admin_login_btn: "Verify PIN"
+                recent_submits: "Recent Submits"
             }
         };
 
         function toggleLang() {
             currentLang = currentLang === 'th' ? 'en' : 'th';
-            localStorage.setItem('lotto_lang', currentLang);
+            localStorage.setItem('lotto_pastel_lang', currentLang);
             updateUILanguage();
         }
 
@@ -561,33 +708,53 @@
             });
         }
 
-        // --- Theme Toggle ---
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('themeIcon');
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                localStorage.setItem('lotto_theme', 'light');
-                icon.className = "fa-solid fa-sun text-amber-500";
+                html.classList.add('light');
+                localStorage.setItem('lotto_pastel_theme', 'light');
+                icon.className = "fa-solid fa-moon text-sm";
             } else {
+                html.classList.remove('light');
                 html.classList.add('dark');
-                localStorage.setItem('lotto_theme', 'dark');
-                icon.className = "fa-solid fa-moon";
+                localStorage.setItem('lotto_pastel_theme', 'dark');
+                icon.className = "fa-solid fa-sun text-amber-400 text-sm";
             }
         }
 
-        // Initialize Theme on Load
-        if (localStorage.getItem('lotto_theme') === 'light') {
-            document.documentElement.classList.remove('dark');
-            document.getElementById('themeIcon').className = "fa-solid fa-sun text-amber-500";
+        if (localStorage.getItem('lotto_pastel_theme') === 'dark') {
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
+            document.getElementById('themeIcon').className = "fa-solid fa-sun text-amber-400 text-sm";
         }
 
-        // --- Countdown Timer (Auto-Close at 14:00) ---
+        function switchTab(targetId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(targetId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.className = "nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300";
+            });
+            const activeBtn = document.querySelector(`[data-target="${targetId}"]`);
+            if (activeBtn) {
+                activeBtn.className = "nav-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 bg-pink-500 text-white shadow-sm";
+            }
+
+            if (targetId === 'tab-entries') renderEntriesTable();
+            if (targetId === 'tab-summary') renderSummaryByName();
+            if (targetId === 'tab-dashboard') renderDashboard();
+            if (targetId === 'tab-receipt') populateReceiptUserSelect();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function updateCountdown() {
             const now = new Date();
             const target = new Date();
             target.setHours(14, 0, 0, 0);
-            if (now > target) target.setDate(target.getDate() + 1); // Next day if past 2 PM
+            if (now > target) target.setDate(target.getDate() + 1);
 
             const diff = target - now;
             const hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
@@ -599,7 +766,6 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // --- Form Submission Handling ---
         function handleTypeChange() {
             const type = document.getElementById('lottoType').value;
             const revBox = document.getElementById('reverseBox');
@@ -613,7 +779,7 @@
         function handleFormSubmit(e) {
             e.preventDefault();
             if (!isBettingOpen) {
-                alert('ระบบปิดรับแทงชั่วคราวแล้ว ไม่สามารถส่งโพยได้ในขณะนี้');
+                alert('ระบบปิดรับแทงชั่วคราวแล้ว ไม่สามารถส่งโพยได้');
                 return;
             }
 
@@ -624,13 +790,11 @@
             const note = document.getElementById('lottoNote').value.trim();
             const isRev = document.getElementById('isReverse').checked;
 
-            // Generate numbers including reverse if checked
             let numbersToInsert = [numberInput];
             if (isRev && numberInput.length === 2) {
                 const rev = numberInput.split('').reverse().join('');
                 if (rev !== numberInput) numbersToInsert.push(rev);
             } else if (isRev && numberInput.length === 3) {
-                // Permutations for 3 digits
                 let perms = new Set();
                 let arr = numberInput.split('');
                 for (let i = 0; i < arr.length; i++) {
@@ -664,104 +828,55 @@
             broadcastState();
             updateUIAll();
             document.getElementById('lottoForm').reset();
-            alert('ส่งโพยเข้าสู่ระบบเรียบร้อยแล้ว!');
+            alert('ส่งโพยเข้าสู่ระบบสำเร็จเรียบร้อย!');
         }
 
-        // --- UI Update Functions ---
         function updateUIAll() {
             renderUserSubmits();
-            renderAdminTable();
-            updateAdminStats();
+            renderEntriesTable();
+            renderSummaryByName();
+            renderDashboard();
             updateBettingBadge();
         }
 
         function updateBettingBadge() {
             const badge = document.getElementById('bettingStatusBadge');
             const text = document.getElementById('statusText');
-            const toggleBtnLbl = document.getElementById('toggleStatusLabel');
-            
             if (isBettingOpen) {
-                badge.className = "px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800";
-                text.innerText = currentLang === 'th' ? 'เปิดรับแทงอยู่' : 'Betting Open';
-                toggleBtnLbl.innerText = currentLang === 'th' ? 'ปิดรับแทงชั่วคราว' : 'Close Betting';
+                badge.className = "px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800";
+                text.innerText = currentLang === 'th' ? 'เปิดรับแทงปกติ' : 'Betting Open';
             } else {
-                badge.className = "px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-300 dark:border-rose-800";
+                badge.className = "px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800";
                 text.innerText = currentLang === 'th' ? 'ปิดรับแทงแล้ว' : 'Betting Closed';
-                toggleBtnLbl.innerText = currentLang === 'th' ? 'เปิดรับแทงอีกครั้ง' : 'Open Betting';
             }
         }
 
         function renderUserSubmits() {
-            const listContainer = document.getElementById('userSubmitsList');
-            const countBadge = document.getElementById('userCountBadge');
-            countBadge.innerText = `${lottoData.length} รายการ`;
-
+            const list = document.getElementById('userSubmitsList');
+            document.getElementById('userCountBadge').innerText = lottoData.length;
             if (lottoData.length === 0) {
-                listContainer.innerHTML = `<p class="text-slate-400 text-center py-4">${i18n[currentLang].no_records}</p>`;
+                list.innerHTML = `<p class="text-slate-400 text-center py-4">ยังไม่มีรายการโพย</p>`;
                 return;
             }
-
-            listContainer.innerHTML = lottoData.slice(0, 5).map(item => `
-                <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 flex items-center justify-between">
+            list.innerHTML = lottoData.slice(0, 5).map(item => `
+                <div class="p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/70 flex items-center justify-between">
                     <div>
-                        <div class="font-bold text-slate-800 dark:text-slate-200">${item.name} - <span class="text-emerald-600 dark:text-emerald-400 text-sm">${item.number}</span> (${item.type})</div>
+                        <div class="font-bold text-slate-800 dark:text-slate-200">${item.name} - <span class="text-pink-600 font-black">${item.number}</span> (${item.type})</div>
                         <div class="text-[10px] text-slate-400">${item.timestamp}</div>
                     </div>
-                    <div class="font-black text-emerald-600 dark:text-emerald-400">${item.amount} ฿</div>
+                    <div class="font-black text-pink-600">${item.amount} ฿</div>
                 </div>
             `).join('');
         }
 
-        // --- Admin Navigation & Security ---
-        function openAdminModal() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            document.getElementById('adminPinInput').value = '';
-            document.getElementById('adminPinInput').focus();
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').classList.add('hidden');
-        }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const pin = document.getElementById('adminPinInput').value;
-            if (pin === ADMIN_PIN) {
-                closeAdminModal();
-                switchView('admin');
-            } else {
-                alert('รหัสผ่าน Admin ไม่ถูกต้อง!');
-                document.getElementById('adminPinInput').value = '';
-            }
-        }
-
-        function logoutAdmin() {
-            switchView('user');
-        }
-
-        function switchView(view) {
-            const userView = document.getElementById('userView');
-            const adminView = document.getElementById('adminView');
-            if (view === 'admin') {
-                userView.classList.add('hidden');
-                adminView.classList.remove('hidden');
-                updateUIAll();
-            } else {
-                adminView.classList.add('hidden');
-                userView.classList.remove('hidden');
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // --- Admin Table & Stats ---
-        function renderAdminTable() {
-            const tbody = document.getElementById('adminTableBody');
-            const emptyState = document.getElementById('emptyTableState');
+        function renderEntriesTable() {
+            const tbody = document.getElementById('entriesTableBody');
+            const emptyState = document.getElementById('emptyEntriesState');
             const searchVal = document.getElementById('searchInput').value.toLowerCase();
             const filterTypeVal = document.getElementById('filterType').value;
 
             const filtered = lottoData.filter(item => {
-                const matchSearch = item.name.toLowerCase().includes(searchVal) || item.number.includes(searchVal) || (item.note && item.note.toLowerCase().includes(searchVal));
+                const matchSearch = item.name.toLowerCase().includes(searchVal) || item.number.includes(searchVal);
                 const matchType = filterTypeVal === 'all' || item.type === filterTypeVal;
                 return matchSearch && matchType;
             });
@@ -774,21 +889,21 @@
             emptyState.classList.add('hidden');
 
             tbody.innerHTML = filtered.map((item, index) => `
-                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition">
-                    <td class="p-4 font-bold text-slate-400">${index + 1}</td>
-                    <td class="p-4 font-bold text-slate-800 dark:text-slate-200">${item.name}</td>
-                    <td class="p-4 font-black text-emerald-600 dark:text-emerald-400 text-sm">${item.number}</td>
-                    <td class="p-4"><span class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold text-[11px]">${item.type}</span></td>
-                    <td class="p-4 text-right font-black text-emerald-600 dark:text-emerald-400">${item.amount.toLocaleString()} ฿</td>
-                    <td class="p-4 text-slate-500 truncate max-w-xs">${item.note || '-'}</td>
-                    <td class="p-4 text-slate-400 text-[11px]">${item.timestamp}</td>
-                    <td class="p-4 text-center">
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="p-3.5 font-bold text-slate-400">${index + 1}</td>
+                    <td class="p-3.5 font-bold text-slate-800 dark:text-slate-200">${item.name}</td>
+                    <td class="p-3.5 font-black text-pink-600 text-sm">${item.number}</td>
+                    <td class="p-3.5"><span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-semibold text-[11px]">${item.type}</span></td>
+                    <td class="p-3.5 text-right font-black text-pink-600">${item.amount.toLocaleString()} ฿</td>
+                    <td class="p-3.5 text-slate-400 truncate max-w-xs">${item.note || '-'}</td>
+                    <td class="p-3.5 text-slate-400 text-[11px]">${item.timestamp}</td>
+                    <td class="p-3.5 text-center">
                         <div class="flex items-center justify-center gap-1.5">
                             <button onclick="openEditModal('${item.id}')" class="p-1.5 rounded-lg bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition" title="แก้ไข">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-pen text-[10px]"></i>
                             </button>
                             <button onclick="deleteItem('${item.id}')" class="p-1.5 rounded-lg bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition" title="ลบ">
-                                <i class="fa-solid fa-trash"></i>
+                                <i class="fa-solid fa-trash text-[10px]"></i>
                             </button>
                         </div>
                     </td>
@@ -796,19 +911,76 @@
             `).join('');
         }
 
-        function updateAdminStats() {
-            document.getElementById('statTotalItems').innerText = lottoData.length;
-            const totalAmt = lottoData.reduce((sum, item) => sum + item.amount, 0);
-            document.getElementById('statTotalAmount').innerText = totalAmt.toLocaleString() + ' ฿';
-            
-            const uniqueNames = new Set(lottoData.map(i => i.name));
-            document.getElementById('statUniqueFriends').innerText = uniqueNames.size + ' คน';
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,ID,Name,Number,Type,Amount,Note,Timestamp\n";
+            lottoData.forEach(row => {
+                csvContent += [row.id, row.name, row.number, row.type, row.amount, `"${row.note || ''}"`, row.timestamp].join(",") + "\n";
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "lotto_entries_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
-            // Find top number
+        function renderSummaryByName() {
+            const tbody = document.getElementById('summaryTableBody');
+            const emptyState = document.getElementById('emptySummaryState');
+
+            const summaryMap = {};
+            lottoData.forEach(item => {
+                if (!summaryMap[item.name]) {
+                    summaryMap[item.name] = { count: 0, totalBet: 0, totalWin: 0 };
+                }
+                summaryMap[item.name].count += 1;
+                summaryMap[item.name].totalBet += item.amount;
+                if (winningResultsCache[item.id]) {
+                    summaryMap[item.name].totalWin += winningResultsCache[item.id];
+                }
+            });
+
+            const names = Object.keys(summaryMap);
+            if (names.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            tbody.innerHTML = names.map(name => {
+                const data = summaryMap[name];
+                return `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                        <td class="p-3.5 font-bold text-slate-800 dark:text-slate-200">${name}</td>
+                        <td class="p-3.5 text-center font-bold">${data.count} โพย</td>
+                        <td class="p-3.5 text-right font-black text-pink-600">${data.totalBet.toLocaleString()} ฿</td>
+                        <td class="p-3.5 text-right font-black text-amber-500">${data.totalWin > 0 ? '+' + data.totalWin.toLocaleString() + ' ฿' : '-'}</td>
+                        <td class="p-3.5 text-center">
+                            <button onclick="printReceiptFor('${name}')" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-pink-500 hover:text-white transition text-[11px] font-bold">
+                                <i class="fa-solid fa-receipt"></i> พิมพ์บิล
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderDashboard() {
+            document.getElementById('dashTotalItems').innerText = lottoData.length;
+            const totalAmt = lottoData.reduce((sum, i) => sum + i.amount, 0);
+            document.getElementById('dashTotalAmount').innerText = totalAmt.toLocaleString() + ' ฿';
+            const uniqueBettors = new Set(lottoData.map(i => i.name));
+            document.getElementById('dashTotalBettors').innerText = uniqueBettors.size + ' คน';
+
             const freq = {};
+            const typeCounts = {};
             lottoData.forEach(i => {
                 freq[i.number] = (freq[i.number] || 0) + 1;
+                typeCounts[i.type] = (typeCounts[i.type] || 0) + i.amount;
             });
+
             let topNum = '-';
             let maxCount = 0;
             for (let num in freq) {
@@ -817,33 +989,203 @@
                     topNum = `${num} (${maxCount} โพย)`;
                 }
             }
-            document.getElementById('statTopNumber').innerText = topNum;
+            document.getElementById('dashTopNumber').innerText = topNum;
+
+            const barsContainer = document.getElementById('typeBreakdownBars');
+            let barsHtml = '';
+            for (let type in typeCounts) {
+                const pct = totalAmt > 0 ? (typeCounts[type] / totalAmt) * 100 : 0;
+                barsHtml += `
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span>${type}</span>
+                            <span class="text-pink-600">${typeCounts[type].toLocaleString()} ฿ (${pct.toFixed(1)}%)</span>
+                        </div>
+                        <div class="w-full h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-pink-400 to-amber-400 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            barsContainer.innerHTML = barsHtml || '<p class="text-xs text-slate-400">ยังไม่มีข้อมูลยอดแทง</p>';
+
+            const sortedNums = Object.entries(freq).sort((a,b) => b[1] - a[1]).slice(0, 5);
+            const topNumsContainer = document.getElementById('topNumbersList');
+            topNumsContainer.innerHTML = sortedNums.length > 0 ? sortedNums.map(([num, count], idx) => `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-500 font-bold text-xs flex items-center justify-center">${idx + 1}</span>
+                        <span class="font-black text-sm text-pink-600">${num}</span>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400">${count} โพย</span>
+                </div>
+            `).join('') : '<p class="text-xs text-slate-400">ยังไม่มีข้อมูลตัวเลข</p>';
         }
 
-        // --- Admin Actions ---
+        function populateReceiptUserSelect() {
+            const select = document.getElementById('receiptUserSelect');
+            const uniqueNames = Array.from(new Set(lottoData.map(i => i.name)));
+            if (uniqueNames.length === 0) {
+                select.innerHTML = '<option value="">ไม่มีรายชื่อ</option>';
+                document.getElementById('receiptItemsBody').innerHTML = '';
+                return;
+            }
+            select.innerHTML = uniqueNames.map(name => `<option value="${name}">${name}</option>`).join('');
+            generateReceipt();
+        }
+
+        function generateReceipt() {
+            const select = document.getElementById('receiptUserSelect');
+            const name = select.value;
+            if (!name) return;
+
+            const userItems = lottoData.filter(i => i.name === name);
+            document.getElementById('receiptName').innerText = name;
+            document.getElementById('receiptId').innerText = 'RCP_' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            document.getElementById('receiptTime').innerText = new Date().toLocaleString('th-TH');
+
+            const tbody = document.getElementById('receiptItemsBody');
+            let total = 0;
+            tbody.innerHTML = userItems.map(item => {
+                total += item.amount;
+                return `
+                    <tr>
+                        <td class="py-2 font-black text-pink-600">${item.number}</td>
+                        <td class="py-2 text-slate-500">${item.type}</td>
+                        <td class="py-2 text-right font-bold">${item.amount.toLocaleString()} ฿</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('receiptTotalAmount').innerText = total.toLocaleString() + ' ฿';
+        }
+
+        function printReceiptFor(name) {
+            switchTab('tab-receipt');
+            setTimeout(() => {
+                document.getElementById('receiptUserSelect').value = name;
+                generateReceipt();
+                window.print();
+            }, 200);
+        }
+
+        let generatedLuckyVal = "";
+        function generateLuckyNumber(digits) {
+            let num = "";
+            for (let i = 0; i < digits; i++) {
+                num += Math.floor(Math.random() * 10);
+            }
+            generatedLuckyVal = num;
+            document.getElementById('luckyNumberDisplay').innerText = num;
+            document.getElementById('luckyNumberType').innerText = `สุ่มเลขมงคล ${digits} ตัวสำเร็จ`;
+            const btn = document.getElementById('transferLuckyBtn');
+            btn.disabled = false;
+            btn.className = "px-6 py-3 rounded-xl bg-pink-500 text-white font-bold text-xs shadow-md hover:bg-pink-600 transition cursor-pointer";
+        }
+
+        function transferLuckyToForm() {
+            if (!generatedLuckyVal) return;
+            switchTab('tab-home');
+            document.getElementById('lottoNumber').value = generatedLuckyVal;
+            document.getElementById('lottoNumber').focus();
+        }
+
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.getElementById('adminPinInput').value = '';
+            document.getElementById('adminPinInput').focus();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+            document.getElementById('adminActionsBox').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === ADMIN_PIN) {
+                document.getElementById('adminActionsBox').classList.remove('hidden');
+            } else {
+                alert('รหัสผ่าน PIN ไม่ถูกต้อง!');
+                document.getElementById('adminPinInput').value = '';
+            }
+        }
+
         function toggleBettingStatus() {
             isBettingOpen = !isBettingOpen;
             broadcastState();
             updateUIAll();
+            alert(`เปลี่ยนสถานะระบบเป็น: ${isBettingOpen ? 'เปิดรับแทงปกติ' : 'ปิดรับแทงชั่วคราว'}`);
         }
 
         function deleteItem(id) {
-            if (confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
+            if (confirm('คุณต้องการลบรายการโพยนี้ใช่หรือไม่?')) {
                 lottoData = lottoData.filter(i => i.id !== id);
+                delete winningResultsCache[id];
                 broadcastState();
                 updateUIAll();
             }
         }
 
         function clearAllData() {
-            if (confirm('⚠️ คำเตือน: คุณต้องการล้างข้อมูลทั้งหมดในระบบใช่หรือไม่? ไม่สามารถกู้คืนได้!')) {
+            if (confirm('⚠ คำเตือน: คุณต้องการล้างข้อมูลโพยทั้งหมดในระบบใช่หรือไม่?')) {
                 lottoData = [];
+                winningResultsCache = {};
                 broadcastState();
                 updateUIAll();
+                alert('ล้างข้อมูลเรียบร้อยแล้ว');
+                closeAdminModal();
             }
         }
 
-        // --- Edit Modal Functions ---
+        function checkWinningResults() {
+            const win3Top = document.getElementById('win3Top').value.trim();
+            const win2Bottom = document.getElementById('win2Bottom').value.trim();
+
+            if (!win3Top && !win2Bottom) {
+                alert('กรุณากรอกผลรางวัลอย่างน้อย 1 ช่อง (3 ตัวบน หรือ 2 ตัวล่าง)');
+                return;
+            }
+
+            const win2Top = win3Top.slice(-2);
+            const win3Tod = win3Top.split('').sort().join('');
+            const payRates = {
+                '3ตัวบน': 900,
+                '3ตัวโต๊ด': 150,
+                '3ตัวล่าง': 450,
+                '2ตัวบน': 90,
+                '2ตัวล่าง': 90,
+                'วิ่งบน': 3,
+                'วิ่งล่าง': 4
+            };
+
+            winningResultsCache = {};
+            let totalWinnersCount = 0;
+
+            lottoData.forEach(item => {
+                let isWin = false;
+                let multiplier = payRates[item.type] || 0;
+
+                if (item.type === '3ตัวบน' && win3Top && item.number === win3Top) isWin = true;
+                if (item.type === '3ตัวโต๊ด' && win3Top && item.number.split('').sort().join('') === win3Tod && item.number !== win3Top) isWin = true;
+                if (item.type === '2ตัวบน' && win3Top && item.number === win2Top) isWin = true;
+                if (item.type === '2ตัวล่าง' && win2Bottom && item.number === win2Bottom) isWin = true;
+                if (item.type === 'วิ่งบน' && win3Top && win3Top.includes(item.number)) isWin = true;
+                if (item.type === 'วิ่งล่าง' && win2Bottom && win2Bottom.includes(item.number)) isWin = true;
+
+                if (isWin) {
+                    winningResultsCache[item.id] = item.amount * multiplier;
+                    totalWinnersCount++;
+                }
+            });
+
+            broadcastState();
+            alert(`ตรวจรางวัลสำเร็จ! พบผู้ถูกรางวัลทั้งหมด ${totalWinnersCount} รายการ ระบบบันทึกยอดเงินรางวัลเรียบร้อยแล้ว`);
+            closeAdminModal();
+            switchTab('tab-summary');
+        }
+
         function openEditModal(id) {
             const item = lottoData.find(i => i.id === id);
             if (!item) return;
@@ -873,129 +1215,10 @@
                 broadcastState();
                 updateUIAll();
                 closeEditModal();
-                alert('อัปเดตข้อมูลเรียบร้อยแล้ว');
+                alert('อัปเดตข้อมูลสำเร็จ');
             }
         }
 
-        // --- Lucky Draw Checker ---
-        function checkWinningResults() {
-            const win3Top = document.getElementById('win3Top').value.trim();
-            const win2Bottom = document.getElementById('win2Bottom').value.trim();
-
-            if (!win3Top && !win2Bottom) {
-                alert('กรุณากรอกผลรางวัลอย่างน้อย 1 ช่อง (3 ตัวบน หรือ 2 ตัวล่าง)');
-                return;
-            }
-
-            const win2Top = win3Top.slice(-2);
-            const win3Tod = win3Top.split('').sort().join('');
-
-            const winners = [];
-            const payRates = {
-                '3ตัวบน': 900,
-                '3ตัวโต๊ด': 150,
-                '3ตัวล่าง': 450,
-                '2ตัวบน': 90,
-                '2ตัวล่าง': 90,
-                'วิ่งบน': 3,
-                'วิ่งล่าง': 4
-            };
-
-            lottoData.forEach(item => {
-                let isWin = false;
-                let multiplier = payRates[item.type] || 0;
-
-                if (item.type === '3ตัวบน' && win3Top && item.number === win3Top) isWin = true;
-                if (item.type === '3ตัวโต๊ด' && win3Top && item.number.split('').sort().join('') === win3Tod && item.number !== win3Top) isWin = true;
-                if (item.type === '2ตัวบน' && win3Top && item.number === win2Top) isWin = true;
-                if (item.type === '2ตัวล่าง' && win2Bottom && item.number === win2Bottom) isWin = true;
-                if (item.type === 'วิ่งบน' && win3Top && win3Top.includes(item.number)) isWin = true;
-                if (item.type === 'วิ่งล่าง' && win2Bottom && win2Bottom.includes(item.number)) isWin = true;
-
-                if (isWin) {
-                    winners.push({
-                        name: item.name,
-                        number: item.number,
-                        type: item.type,
-                        betAmount: item.amount,
-                        winAmount: item.amount * multiplier
-                    });
-                }
-            });
-
-            const tbody = document.getElementById('winnersTableBody');
-            const noState = document.getElementById('noWinnersState');
-            document.getElementById('drawSummaryText').innerText = `ผลรางวัล: 3ตัวบน [${win3Top || '-'}] | 2ตัวล่าง [${win2Bottom || '-'}] (พบผู้ถูกรางวัล ${winners.length} รายการ)`;
-
-            if (winners.length === 0) {
-                tbody.innerHTML = '';
-                noState.classList.remove('hidden');
-            } else {
-                noState.classList.add('hidden');
-                tbody.innerHTML = winners.map(w => `
-                    <tr>
-                        <td class="p-3 font-bold">${w.name}</td>
-                        <td class="p-3 font-black text-emerald-600">${w.number}</td>
-                        <td class="p-3">${w.type}</td>
-                        <td class="p-3 text-right">${w.betAmount.toLocaleString()} ฿</td>
-                        <td class="p-3 text-right font-black text-amber-500">+${w.winAmount.toLocaleString()} ฿</td>
-                    </tr>
-                `).join('');
-            }
-            document.getElementById('winnersModal').classList.remove('hidden');
-        }
-
-        function closeWinnersModal() {
-            document.getElementById('winnersModal').classList.add('hidden');
-        }
-
-        // --- Export Functions ---
-        function exportCSV() {
-            if (lottoData.length === 0) { alert('ไม่มีข้อมูลสำหรับ Export'); return; }
-            let csvContent = "\uFEFFลำดับ,ชื่อผู้ส่ง,เลขแทง,ประเภท,จำนวนเงิน,หมายเหตุ,เวลา\n";
-            lottoData.forEach((i, index) => {
-                csvContent += `${index + 1},"${i.name}","${i.number}","${i.type}",${i.amount},"${i.note || ''}","${i.timestamp}"\n`;
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `lotto_report_${Date.now()}.csv`;
-            a.click();
-        }
-
-        function exportExcel() {
-            if (lottoData.length === 0) { alert('ไม่มีข้อมูลสำหรับ Export'); return; }
-            let html = `
-                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-                <head><meta charset="UTF-8"></head>
-                <body>
-                <table border="1">
-                    <tr>
-                        <th>ลำดับ</th><th>ชื่อผู้ส่ง</th><th>เลขแทง</th><th>ประเภท</th><th>จำนวนเงิน (บาท)</th><th>หมายเหตุ</th><th>เวลาที่ส่ง</th>
-                    </tr>
-            `;
-            lottoData.forEach((i, index) => {
-                html += `<tr>
-                    <td>${index + 1}</td>
-                    <td>${i.name}</td>
-                    <td>${i.number}</td>
-                    <td>${i.type}</td>
-                    <td>${i.amount}</td>
-                    <td>${i.note || ''}</td>
-                    <td>${i.timestamp}</td>
-                </tr>`;
-            });
-            html += `</table></body></html>`;
-            const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `lotto_report_${Date.now()}.xls`;
-            a.click();
-        }
-
-        // Initial Load
         updateUIAll();
     </script>
 </body>
